@@ -1,0 +1,50 @@
+# .NET build and publish output
+[Bb]in/
+[Oo]bj/
+artifacts/
+publish/
+
+# Avalonia build task cache
+.avalonia-build-tasks/
+
+# Test and coverage output
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+*.nupkg
+*.snupkg
+
+# Visual Studio and Rider user settings
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+
+# VS Code
+.vscode/
+
+# Logs and caches
+*.log
+*.cache
+
+# Local environment files and private signing certificates
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pfx
+*.p12
+*.publishsettings
+
+# Editor temporary files and operating system metadata
+*~
+.*.swp
+.*.swo
+.directory
+.DS_Store
+Thumbs.db
+Desktop.ini
