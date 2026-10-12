@@ -27,8 +27,7 @@
                             <TextBlock Classes="description" Text="Record your mouse and keyboard actions." />
                         </StackPanel>
                         <Grid ColumnDefinitions="1.4*,*,*" ColumnSpacing="10" Height="90">
-                            <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
-                                    AutomationProperties.Name="Record macro">
+                            <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" AutomationProperties.Name="Record macro">
                                 <Grid ColumnDefinitions="52,*" ColumnSpacing="12">
                                     <svg:Svg Classes="action-icon" Path="/Assets/Icons/record.svg" Width="52" Height="52" />
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
