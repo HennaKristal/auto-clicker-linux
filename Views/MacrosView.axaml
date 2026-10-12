@@ -1,0 +1,126 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:views="using:AutoClicker.Views" xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia" x:Class="AutoClicker.Views.MacrosView">
+
+    <UserControl.Styles>
+        <Style Selector="Border.macro-panel">
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="{DynamicResource ControlRadius}" />
+            <Setter Property="Padding" Value="12" />
+        </Style>
+        <Style Selector="Grid.macro-columns">
+            <Setter Property="ColumnSpacing" Value="8" />
+        </Style>
+        <Style Selector="TextBlock.table-heading">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </UserControl.Styles>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <Grid Margin="13" RowDefinitions="Auto,*" RowSpacing="10">
+            <Border Classes="card">
+                <Grid ColumnDefinitions="*,230" ColumnSpacing="14">
+                    <StackPanel Spacing="14">
+                        <StackPanel Spacing="3">
+                            <TextBlock Classes="section-title" Text="Macro Recorder" />
+                            <TextBlock Classes="description" Text="Record your mouse and keyboard actions." />
+                        </StackPanel>
+                        <Grid ColumnDefinitions="1.4*,*,*" ColumnSpacing="10" Height="90">
+                            <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                                    AutomationProperties.Name="Record macro">
+                                <Grid ColumnDefinitions="52,*" ColumnSpacing="12">
+                                    <svg:Svg Classes="action-icon" Path="/Assets/Icons/record.svg" Width="52" Height="52" />
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                                        <TextBlock Classes="section-title" Text="Record" />
+                                        <TextBlock Classes="description" Text="Start recording your actions" />
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+                            <Border Grid.Column="1" Classes="macro-panel">
+                                <StackPanel Spacing="7" VerticalAlignment="Center">
+                                    <TextBlock Classes="description" Text="Start Recording Hotkey" />
+                                    <TextBox Text="Ctrl + F1" AutomationProperties.Name="Start recording hotkey" />
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" Classes="macro-panel">
+                                <StackPanel Spacing="7" VerticalAlignment="Center">
+                                    <TextBlock Classes="description" Text="Stop Recording Hotkey" />
+                                    <TextBox Text="Ctrl + F2" AutomationProperties.Name="Stop recording hotkey" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                    <Border Grid.Column="1" Classes="macro-panel">
+                        <StackPanel Spacing="2">
+                            <TextBlock Classes="label" Text="Recording Options" Margin="0,0,0,4" />
+                            <CheckBox Content="Record mouse movements" IsChecked="True" />
+                            <CheckBox Content="Record mouse clicks" IsChecked="True" />
+                            <CheckBox Content="Record keyboard input" IsChecked="True" />
+                            <CheckBox Content="Record scroll wheel" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+            <Border Grid.Row="1" Classes="card" MinHeight="378">
+                <StackPanel Spacing="12">
+                    <Grid ColumnDefinitions="*,200" ColumnSpacing="10">
+                        <StackPanel Spacing="3">
+                            <TextBlock Classes="section-title" Text="Recorded Macros" />
+                            <TextBlock Classes="description" Text="Manage your recorded macros." />
+                        </StackPanel>
+                        <TextBox Grid.Column="1" PlaceholderText="Search..." VerticalAlignment="Center" AutomationProperties.Name="Search macros" />
+                    </Grid>
+                    <StackPanel Spacing="5">
+                        <Border Classes="macro-panel" Padding="9,9" Background="{DynamicResource ButtonOffBrush}">
+                            <Grid Classes="macro-columns" ColumnDefinitions="20,*,120,164,65,126,114">
+                                <TextBlock Grid.Column="1" Classes="table-heading" Text="Name  ↕" />
+                                <TextBlock Grid.Column="2" Classes="table-heading" Text="Hotkey (Play)  ↕" />
+                                <TextBlock Grid.Column="3" Classes="table-heading" Text="Repeat  ↕" />
+                                <TextBlock Grid.Column="4" Classes="table-heading" Text="Length  ↕" />
+                                <TextBlock Grid.Column="5" Classes="table-heading" Text="Created  ↕" />
+                                <TextBlock Grid.Column="6" Classes="table-heading" Text="Actions" />
+                            </Grid>
+                        </Border>
+                        <ItemsControl Name="MacroExamples">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate><StackPanel Spacing="5" /></ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="views:MacroPreviewItem">
+                                    <Border Classes="macro-panel" Padding="9,8" Background="{DynamicResource BackgroundBrush}">
+                                        <Grid Classes="macro-columns" ColumnDefinitions="20,*,120,164,65,126,114">
+                                            <TextBlock Classes="drag-handle" Text="⠿" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" FontSize="16" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="SemiBold" Foreground="{DynamicResource TitleBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                            <TextBox Grid.Column="2" Text="{Binding Hotkey, Mode=TwoWay}" AutomationProperties.Name="Macro play hotkey" />
+                                            <Grid Grid.Column="3" ColumnDefinitions="72,*" ColumnSpacing="8">
+                                                <NumericUpDown Value="{Binding Repeat, Mode=OneWay}" Minimum="0" AutomationProperties.Name="Repeat count" />
+                                                <CheckBox Grid.Column="1" Content="Infinite" IsChecked="{Binding Infinite, Mode=OneWay}" />
+                                            </Grid>
+                                            <TextBlock Grid.Column="4" Text="{Binding Length}" VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="5" Text="{Binding Created}" VerticalAlignment="Center" />
+                                            <StackPanel Grid.Column="6" Orientation="Horizontal" Spacing="6">
+                                                <Button Classes="icon-button" ToolTip.Tip="Play macro" AutomationProperties.Name="Play macro">
+                                                    <svg:Svg Classes="action-icon" Path="/Assets/Icons/play.svg" />
+                                                </Button>
+                                                <Button Classes="icon-button" ToolTip.Tip="Edit macro" AutomationProperties.Name="Edit macro">
+                                                    <svg:Svg Classes="action-icon" Path="/Assets/Icons/edit.svg" />
+                                                </Button>
+                                                <Button Classes="icon-button danger" ToolTip.Tip="Delete macro" AutomationProperties.Name="Delete macro">
+                                                    <svg:Svg Classes="action-icon" Path="/Assets/Icons/delete.svg" />
+                                                </Button>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <!-- <views:MacroPreviewItem Name="Gather Resources" Hotkey="Ctrl + 1" Repeat="3" Length="12.4s" Created="2026-10-05 14:22" /> -->
+                            <!-- <views:MacroPreviewItem Name="Gather Resources" Hotkey="Ctrl + 2" Repeat="1" Length="8.7s" Created="2026-10-05 16:10" /> -->
+                            <!-- <views:MacroPreviewItem Name="Gather Resources" Hotkey="Ctrl + 3" Repeat="10" Length="6.1s" Created="2026-10-04 20:33" /> -->
+                        </ItemsControl>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

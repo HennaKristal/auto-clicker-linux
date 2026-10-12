@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Class="AutoClicker.Views.AboutView">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32,22" Width="520" HorizontalAlignment="Left">
+
+            <Grid ColumnDefinitions="*,Auto" Margin="0,18">
+                <TextBlock Classes="section-title" Text="Version" />
+                <TextBlock Grid.Column="1" Classes="label muted" Text="v1.0.0" />
+            </Grid>
+
+            <Border Classes="divider" />
+
+            <Grid ColumnDefinitions="*,86" ColumnSpacing="19" Margin="0,18">
+                <StackPanel Spacing="5">
+                    <TextBlock Classes="section-title" Text="Reset All Settings" />
+                    <TextBlock Classes="description" Text="Will reset all input fields and settings to their defaults." />
+                </StackPanel>
+                <Button Grid.Column="1" Classes="danger" Content="Reset" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+            </Grid>
+
+            <Border Classes="divider" />
+
+            <StackPanel Spacing="5" Margin="0,18,0,24">
+                <StackPanel Spacing="22">
+                    <StackPanel Spacing="5">
+                        <TextBlock Classes="section-title" Text="Total Clicks" />
+                        <TextBlock Classes="description" Text="0" />
+                    </StackPanel>
+                    <StackPanel Spacing="5">
+                        <TextBlock Classes="section-title" Text="Time Spent Clicking" />
+                        <TextBlock Classes="description" Text="0m 0s" />
+                    </StackPanel>
+                    <StackPanel Spacing="5">
+                        <TextBlock Classes="section-title" Text="Sessions" />
+                        <TextBlock Classes="description" Text="0" />
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,68 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Color Palette-->
+    <Color x:Key="BackgroundColor">#0A1117</Color>
+    <Color x:Key="BorderColor">#34414E</Color>
+    <Color x:Key="SectionGradient1Color">#17212C</Color>
+    <Color x:Key="SectionGradient2Color">#0E171F</Color>
+    <Color x:Key="TitleColor">#EDF2F7</Color>
+    <Color x:Key="TextColor">#B5C0CF</Color>
+    <Color x:Key="ButtonOffColor">#17212C</Color>
+    <Color x:Key="ButtonOffHoverColor">#22303E</Color>
+    <Color x:Key="ButtonOffTextColor">#B5C0CF</Color>
+    <Color x:Key="ButtonOffTextHoverColor">#EDF2F7</Color>
+    <Color x:Key="ButtonOnColor">#FFAE38</Color>
+    <Color x:Key="ButtonOnHoverColor">#FFB838</Color>
+    <Color x:Key="ButtonOnTextColor">#111820</Color>
+    <Color x:Key="ButtonOnTextHoverColor">#111820</Color>
+    <Color x:Key="GreenColor">#40EE70</Color>
+    <Color x:Key="RedColor">#C32D1E</Color>
+    <Color x:Key="TransparentColor">#00000000</Color>
+
+    <!-- Derived resources: edit the palette above, not individual control brushes. -->
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}" />
+    <SolidColorBrush x:Key="BorderBrush" Color="{DynamicResource BorderColor}" />
+    <SolidColorBrush x:Key="SectionGradient1Brush" Color="{DynamicResource SectionGradient1Color}" />
+    <SolidColorBrush x:Key="SectionGradient2Brush" Color="{DynamicResource SectionGradient2Color}" />
+    <SolidColorBrush x:Key="TitleBrush" Color="{DynamicResource TitleColor}" />
+    <SolidColorBrush x:Key="TextBrush" Color="{DynamicResource TextColor}" />
+    <SolidColorBrush x:Key="ButtonOffBrush" Color="{DynamicResource ButtonOffColor}" />
+    <SolidColorBrush x:Key="ButtonOffHoverBrush" Color="{DynamicResource ButtonOffHoverColor}" />
+    <SolidColorBrush x:Key="ButtonOffTextBrush" Color="{DynamicResource ButtonOffTextColor}" />
+    <SolidColorBrush x:Key="ButtonOffTextHoverBrush" Color="{DynamicResource ButtonOffTextHoverColor}" />
+    <SolidColorBrush x:Key="ButtonOnBrush" Color="{DynamicResource ButtonOnColor}" />
+    <SolidColorBrush x:Key="ButtonOnHoverBrush" Color="{DynamicResource ButtonOnHoverColor}" />
+    <SolidColorBrush x:Key="ButtonOnTextBrush" Color="{DynamicResource ButtonOnTextColor}" />
+    <SolidColorBrush x:Key="ButtonOnTextHoverBrush" Color="{DynamicResource ButtonOnTextHoverColor}" />
+    <SolidColorBrush x:Key="GreenBrush" Color="{DynamicResource GreenColor}" />
+    <SolidColorBrush x:Key="RedBrush" Color="{DynamicResource RedColor}" />
+    <SolidColorBrush x:Key="TransparentBrush" Color="{DynamicResource TransparentColor}" />
+
+    <LinearGradientBrush x:Key="SectionGradientBrush" StartPoint="0%,0%" EndPoint="100%,100%">
+        <GradientStop Color="{DynamicResource SectionGradient1Color}" Offset="0" />
+        <GradientStop Color="{DynamicResource SectionGradient2Color}" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- Fluent resource names are adapters to the same palette, not extra colors. -->
+    <SolidColorBrush x:Key="TextControlForeground" Color="{DynamicResource TextColor}" />
+    <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="{DynamicResource TextColor}" />
+    <SolidColorBrush x:Key="TextControlForegroundFocused" Color="{DynamicResource TextColor}" />
+    <SolidColorBrush x:Key="TextControlForegroundDisabled" Color="{DynamicResource TextColor}" />
+    <SolidColorBrush x:Key="TextControlBackground" Color="{DynamicResource BackgroundColor}" />
+    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="{DynamicResource BackgroundColor}" />
+    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="{DynamicResource BackgroundColor}" />
+    <SolidColorBrush x:Key="TextControlBackgroundDisabled" Color="{DynamicResource BackgroundColor}" />
+    <SolidColorBrush x:Key="TextControlBorderBrush" Color="{DynamicResource BorderColor}" />
+    <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="{DynamicResource BorderColor}" />
+    <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="{DynamicResource ButtonOnColor}" />
+    <SolidColorBrush x:Key="TextControlBorderBrushDisabled" Color="{DynamicResource BorderColor}" />
+    <SolidColorBrush x:Key="TextControlSelectionHighlightColor" Color="{DynamicResource ButtonOffHoverColor}" />
+    <SolidColorBrush x:Key="TextControlPlaceholderForeground" Color="{DynamicResource TextColor}" />
+    <SolidColorBrush x:Key="SystemControlHighlightAccentBrush" Color="{DynamicResource ButtonOnColor}" />
+    <SolidColorBrush x:Key="SystemControlFocusVisualPrimaryBrush" Color="{DynamicResource ButtonOnColor}" />
+    <SolidColorBrush x:Key="SystemControlFocusVisualSecondaryBrush" Color="{DynamicResource BackgroundColor}" />
+    <SolidColorBrush x:Key="SystemControlErrorTextForegroundBrush" Color="{DynamicResource RedColor}" />
+    <SolidColorBrush x:Key="ToolTipBackground" Color="{DynamicResource BackgroundColor}" />
+    <SolidColorBrush x:Key="ToolTipBorderBrush" Color="{DynamicResource BorderColor}" />
+    <SolidColorBrush x:Key="ToolTipForeground" Color="{DynamicResource TextColor}" />
+</ResourceDictionary>

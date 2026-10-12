@@ -27,6 +27,10 @@ coverage/
 # VS Code
 .vscode/
 
+# LLM
+.codex/
+docs/
+
 # Logs and caches
 *.log
 *.cache
