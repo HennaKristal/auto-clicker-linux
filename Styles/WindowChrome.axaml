@@ -1,8 +1,9 @@
 <Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:chrome="using:Avalonia.Controls.Chrome">
     <Styles.Resources>
         <CornerRadius x:Key="WindowCornerRadius">12</CornerRadius>
+        <x:Double x:Key="TitleBarHeight">64</x:Double>
         <ControlTheme x:Key="AppWindowDecorations" TargetType="chrome:WindowDrawnDecorations">
-            <Setter Property="DefaultTitleBarHeight" Value="64" />
+            <Setter Property="DefaultTitleBarHeight" Value="{StaticResource TitleBarHeight}" />
             <Setter Property="DefaultFrameThickness" Value="1" />
             <Setter Property="DefaultShadowThickness" Value="0" />
             <Setter Property="Template">
@@ -12,7 +13,7 @@
                             <Border Background="{DynamicResource BackgroundBrush}" CornerRadius="{DynamicResource WindowCornerRadius}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" />
                         </chrome:WindowDrawnDecorationsContent.Underlay>
                         <chrome:WindowDrawnDecorationsContent.Overlay>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Height="64" Margin="0,0,10,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Height="{StaticResource TitleBarHeight}" Margin="0,0,10,0">
                                 <Button Name="PART_MinimizeButton" Classes="caption-button" AutomationProperties.Name="Minimize" ToolTip.Tip="Minimize">
                                     <Path Data="M 1,7 L 15,7" Classes="caption-icon" />
                                 </Button>
@@ -46,7 +47,11 @@
             <ScaleTransform ScaleX="0.75" ScaleY="0.75" />
         </Setter>
     </Style>
+    <Style Selector="Button.caption-button.close:pointerover">
+        <Setter Property="Foreground" Value="{DynamicResource ButtonOnTextBrush}" />
+    </Style>
     <Style Selector="Button.caption-button.close:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource ButtonOnTextBrush}" />
         <Setter Property="Background" Value="{DynamicResource RedBrush}" />
     </Style>
 
@@ -60,26 +65,28 @@
         </Setter>
         <Setter Property="Template">
             <ControlTemplate>
-                <Grid RowDefinitions="64,*">
-                    <Border Background="{DynamicResource SectionGradientBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" chrome:WindowDecorationProperties.ElementRole="TitleBar">
+                <Grid RowDefinitions="Auto,*">
+                    <Border Height="{StaticResource TitleBarHeight}" Background="{DynamicResource SectionGradientBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1" chrome:WindowDecorationProperties.ElementRole="TitleBar">
                         <Grid>
                             <Image Source="avares://AutoClicker/Assets/Icons/icon.ico" Width="36" Height="36" Margin="18,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" Stretch="Uniform" />
-                            <ItemsPresenter Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}" Margin="68,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" chrome:WindowDecorationProperties.ElementRole="User" />
-                            <TextBlock Text="AutoClicker" FontSize="23.4" FontWeight="Bold" Foreground="{DynamicResource TitleBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
+                            <ItemsPresenter Name="PART_ItemsPresenter" ItemsPanel="{TemplateBinding ItemsPanel}" HorizontalAlignment="Left" VerticalAlignment="Center" chrome:WindowDecorationProperties.ElementRole="User" />
+                            <TextBlock Text="{Binding $parent[Window].Title}" FontSize="23.4" FontWeight="Bold" Foreground="{DynamicResource TitleBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
                         </Grid>
                     </Border>
                     <Panel Grid.Row="1" ClipToBounds="True">
-                        <ContentPresenter Name="PART_SelectedContentHost2" IsVisible="False" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
-                        <ContentPresenter Name="PART_SelectedContentHost" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+                        <!-- Avalonia uses the second presenter when a tab page transition is configured. -->
+                        <ContentPresenter Name="PART_SelectedContentHost2" IsVisible="False" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        <ContentPresenter Name="PART_SelectedContentHost" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
                     </Panel>
                 </Grid>
             </ControlTemplate>
         </Setter>
     </Style>
+    <!-- Override Fluent's presenter margin so the navigation clears the app icon. -->
     <Style Selector="TabControl.main-navigation /template/ ItemsPresenter#PART_ItemsPresenter">
         <Setter Property="Margin" Value="68,0,0,0" />
     </Style>
-    <Style Selector="TabItem">
+    <Style Selector="TabControl.main-navigation TabItem">
         <Setter Property="Foreground" Value="{DynamicResource ButtonOffTextBrush}" />
         <Setter Property="Background" Value="{DynamicResource ButtonOffBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
@@ -96,22 +103,25 @@
             </ControlTemplate>
         </Setter>
     </Style>
-    <Style Selector="TabItem:pointerover">
+    <Style Selector="TabControl.main-navigation TabItem:pointerover">
         <Setter Property="Foreground" Value="{DynamicResource ButtonOffTextHoverBrush}" />
         <Setter Property="Background" Value="{DynamicResource ButtonOffHoverBrush}" />
     </Style>
-    <Style Selector="TabItem:selected">
+    <Style Selector="TabControl.main-navigation TabItem:selected">
         <Setter Property="Foreground" Value="{DynamicResource ButtonOnBrush}" />
         <Setter Property="Background" Value="{DynamicResource ButtonOffBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource ButtonOnBrush}" />
         <Setter Property="BorderThickness" Value="2" />
     </Style>
-    <Style Selector="TabItem:selected:pointerover">
+    <Style Selector="TabControl.main-navigation TabItem:selected:pointerover">
         <Setter Property="Background" Value="{DynamicResource ButtonOffHoverBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource ButtonOnHoverBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource ButtonOnHoverBrush}" />
     </Style>
-    <Style Selector="TabItem:focus-visible /template/ ContentPresenter#PART_ContentPresenter">
+    <Style Selector="TabControl.main-navigation TabItem:focus-visible /template/ ContentPresenter#PART_ContentPresenter">
         <Setter Property="BorderBrush" Value="{DynamicResource TitleBrush}" />
+    </Style>
+    <Style Selector="TabControl.main-navigation TabItem:disabled">
+        <Setter Property="Opacity" Value="{DynamicResource DisabledControlOpacity}" />
     </Style>
 </Styles>

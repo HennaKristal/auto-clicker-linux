@@ -18,7 +18,7 @@
     </UserControl.Styles>
 
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="13" RowDefinitions="Auto,*" RowSpacing="10">
+        <Grid Margin="{StaticResource PageMargin}" RowDefinitions="Auto,*" RowSpacing="{StaticResource PageSpacing}">
             <Border Classes="card">
                 <Grid ColumnDefinitions="*,230" ColumnSpacing="14">
                     <StackPanel Spacing="14">
@@ -72,6 +72,7 @@
                     </Grid>
                     <StackPanel Spacing="5">
                         <Border Classes="macro-panel" Padding="9,9" Background="{DynamicResource ButtonOffBrush}">
+                            <!-- Keep these column widths aligned with the item template below. -->
                             <Grid Classes="macro-columns" ColumnDefinitions="20,*,120,164,65,126,114">
                                 <TextBlock Grid.Column="1" Classes="table-heading" Text="Name  ↕" />
                                 <TextBlock Grid.Column="2" Classes="table-heading" Text="Hotkey (Play)  ↕" />
@@ -81,20 +82,20 @@
                                 <TextBlock Grid.Column="6" Classes="table-heading" Text="Actions" />
                             </Grid>
                         </Border>
-                        <ItemsControl Name="MacroExamples">
+                        <ItemsControl Name="MacroItems">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate><StackPanel Spacing="5" /></ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="views:MacroPreviewItem">
+                                <DataTemplate x:DataType="views:MacroPreviewItem" x:CompileBindings="True">
                                     <Border Classes="macro-panel" Padding="9,8" Background="{DynamicResource BackgroundBrush}">
                                         <Grid Classes="macro-columns" ColumnDefinitions="20,*,120,164,65,126,114">
-                                            <TextBlock Classes="drag-handle" Text="⠿" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" FontSize="16" />
+                                            <TextBlock Text="⠿" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" FontSize="16" IsHitTestVisible="False" />
                                             <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="SemiBold" Foreground="{DynamicResource TitleBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
                                             <TextBox Grid.Column="2" Text="{Binding Hotkey, Mode=TwoWay}" AutomationProperties.Name="Macro play hotkey" />
                                             <Grid Grid.Column="3" ColumnDefinitions="72,*" ColumnSpacing="8">
-                                                <NumericUpDown Value="{Binding Repeat, Mode=OneWay}" Minimum="0" AutomationProperties.Name="Repeat count" />
-                                                <CheckBox Grid.Column="1" Content="Infinite" IsChecked="{Binding Infinite, Mode=OneWay}" />
+                                                <NumericUpDown Value="{Binding Repeat, Mode=TwoWay}" Minimum="0" AutomationProperties.Name="Repeat count" />
+                                                <CheckBox Grid.Column="1" Content="Infinite" IsChecked="{Binding Infinite, Mode=TwoWay}" />
                                             </Grid>
                                             <TextBlock Grid.Column="4" Text="{Binding Length}" VerticalAlignment="Center" />
                                             <TextBlock Grid.Column="5" Text="{Binding Created}" VerticalAlignment="Center" />
@@ -113,7 +114,7 @@
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
-                            <!-- <views:MacroPreviewItem Name="Gather Resources" Hotkey="Ctrl + 1" Repeat="3" Length="12.4s" Created="2026-10-05 14:22" /> -->
+                             <views:MacroPreviewItem Name="Gather Resources" Hotkey="Ctrl + 1" Repeat="3" Length="12.4s" Created="2026-10-05 14:22" />
                             <!-- <views:MacroPreviewItem Name="Gather Resources" Hotkey="Ctrl + 2" Repeat="1" Length="8.7s" Created="2026-10-05 16:10" /> -->
                             <!-- <views:MacroPreviewItem Name="Gather Resources" Hotkey="Ctrl + 3" Repeat="10" Length="6.1s" Created="2026-10-04 20:33" /> -->
                         </ItemsControl>

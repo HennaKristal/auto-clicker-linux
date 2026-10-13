@@ -1,8 +1,17 @@
 <UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia" x:Class="AutoClicker.Views.ClickerView">
 
+    <UserControl.Styles>
+        <Style Selector="Border.card.stop-card">
+            <Setter Property="Padding" Value="18,11" />
+        </Style>
+        <Style Selector="Border.card.position-card">
+            <Setter Property="Padding" Value="18,10" />
+        </Style>
+    </UserControl.Styles>
+
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="13" ColumnDefinitions="1.05*,*" ColumnSpacing="11">
-            <StackPanel Spacing="10">
+        <Grid Margin="{StaticResource PageMargin}" ColumnDefinitions="1.05*,*" ColumnSpacing="11">
+            <StackPanel Spacing="{StaticResource PageSpacing}">
                 <Border Classes="card">
                     <StackPanel Spacing="11">
                         <StackPanel Spacing="3">
@@ -92,7 +101,7 @@
                 </Border>
             </StackPanel>
 
-            <StackPanel Grid.Column="1" Spacing="10">
+            <StackPanel Grid.Column="1" Spacing="{StaticResource PageSpacing}">
                 <Border Classes="card">
                     <Grid ColumnDefinitions="*,117,86" ColumnSpacing="10">
                         <TextBlock Classes="section-title" Text="Click Limit" VerticalAlignment="Center" />

@@ -10,6 +10,8 @@
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="/Styles/Controls.axaml" />
+        <StyleInclude Source="/Styles/Buttons.axaml" />
+        <StyleInclude Source="/Styles/Inputs.axaml" />
         <StyleInclude Source="/Styles/WindowChrome.axaml" />
     </Application.Styles>
 </Application>

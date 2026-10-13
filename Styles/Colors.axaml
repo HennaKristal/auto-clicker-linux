@@ -1,6 +1,6 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- Color Palette-->
+    <!-- Color palette -->
     <Color x:Key="BackgroundColor">#0A1117</Color>
     <Color x:Key="BorderColor">#34414E</Color>
     <Color x:Key="SectionGradient1Color">#17212C</Color>
@@ -16,14 +16,12 @@
     <Color x:Key="ButtonOnTextColor">#111820</Color>
     <Color x:Key="ButtonOnTextHoverColor">#111820</Color>
     <Color x:Key="GreenColor">#40EE70</Color>
-    <Color x:Key="RedColor">#C32D1E</Color>
+    <Color x:Key="RedColor">#FF414D</Color>
     <Color x:Key="TransparentColor">#00000000</Color>
 
-    <!-- Derived resources: edit the palette above, not individual control brushes. -->
+    <!-- Derived resources: edit the palette above, not individual control brushes -->
     <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}" />
     <SolidColorBrush x:Key="BorderBrush" Color="{DynamicResource BorderColor}" />
-    <SolidColorBrush x:Key="SectionGradient1Brush" Color="{DynamicResource SectionGradient1Color}" />
-    <SolidColorBrush x:Key="SectionGradient2Brush" Color="{DynamicResource SectionGradient2Color}" />
     <SolidColorBrush x:Key="TitleBrush" Color="{DynamicResource TitleColor}" />
     <SolidColorBrush x:Key="TextBrush" Color="{DynamicResource TextColor}" />
     <SolidColorBrush x:Key="ButtonOffBrush" Color="{DynamicResource ButtonOffColor}" />
@@ -43,7 +41,7 @@
         <GradientStop Color="{DynamicResource SectionGradient2Color}" Offset="1" />
     </LinearGradientBrush>
 
-    <!-- Fluent resource names are adapters to the same palette, not extra colors. -->
+    <!-- Fluent resource names are adapters to the same palette, not extra colors -->
     <SolidColorBrush x:Key="TextControlForeground" Color="{DynamicResource TextColor}" />
     <SolidColorBrush x:Key="TextControlForegroundPointerOver" Color="{DynamicResource TextColor}" />
     <SolidColorBrush x:Key="TextControlForegroundFocused" Color="{DynamicResource TextColor}" />

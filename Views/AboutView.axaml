@@ -19,23 +19,20 @@
 
             <Border Classes="divider" />
 
-            <StackPanel Spacing="5" Margin="0,18,0,24">
-                <StackPanel Spacing="22">
-                    <StackPanel Spacing="5">
-                        <TextBlock Classes="section-title" Text="Total Clicks" />
-                        <TextBlock Classes="description" Text="0" />
-                    </StackPanel>
-                    <StackPanel Spacing="5">
-                        <TextBlock Classes="section-title" Text="Time Spent Clicking" />
-                        <TextBlock Classes="description" Text="0m 0s" />
-                    </StackPanel>
-                    <StackPanel Spacing="5">
-                        <TextBlock Classes="section-title" Text="Sessions" />
-                        <TextBlock Classes="description" Text="0" />
-                    </StackPanel>
+            <StackPanel Spacing="22" Margin="0,18,0,24">
+                <StackPanel Spacing="5">
+                    <TextBlock Classes="section-title" Text="Total Clicks" />
+                    <TextBlock Classes="description" Text="0" />
+                </StackPanel>
+                <StackPanel Spacing="5">
+                    <TextBlock Classes="section-title" Text="Time Spent Clicking" />
+                    <TextBlock Classes="description" Text="0m 0s" />
+                </StackPanel>
+                <StackPanel Spacing="5">
+                    <TextBlock Classes="section-title" Text="Sessions" />
+                    <TextBlock Classes="description" Text="0" />
                 </StackPanel>
             </StackPanel>
         </StackPanel>
-
     </ScrollViewer>
 </UserControl>

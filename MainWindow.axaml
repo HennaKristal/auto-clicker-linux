@@ -1,22 +1,4 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:views="using:AutoClicker.Views"
-        mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="688"
-        x:Class="AutoClicker.MainWindow"
-        Title="AutoClicker"
-        Icon="avares://AutoClicker/Assets/Icons/icon.ico"
-        Width="960"
-        Height="688"
-        CanResize="False"
-        CanMaximize="False"
-        TransparencyLevelHint="Transparent"
-        Background="{DynamicResource TransparentBrush}"
-        ExtendClientAreaToDecorationsHint="True"
-        ExtendClientAreaTitleBarHeightHint="64"
-        WindowDecorationsTheme="{StaticResource AppWindowDecorations}"
-        WindowStartupLocation="CenterScreen">
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:views="using:AutoClicker.Views" mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="688" x:Class="AutoClicker.MainWindow" Title="AutoClicker" Icon="avares://AutoClicker/Assets/Icons/icon.ico" Width="960" Height="688" CanResize="False" CanMaximize="False" TransparencyLevelHint="Transparent" Background="{DynamicResource TransparentBrush}" ExtendClientAreaToDecorationsHint="True" ExtendClientAreaTitleBarHeightHint="{StaticResource TitleBarHeight}" WindowDecorationsTheme="{StaticResource AppWindowDecorations}" WindowStartupLocation="CenterScreen">
     <Border Background="{DynamicResource BackgroundBrush}" CornerRadius="{DynamicResource WindowCornerRadius}" ClipToBounds="True">
         <TabControl Name="MainNavigation" Classes="main-navigation" SelectedIndex="0">
             <TabItem Header="Clicker">

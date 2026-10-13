@@ -1,0 +1,205 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style Selector="Button">
+        <Setter Property="Background" Value="{DynamicResource ButtonOffBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ButtonOffTextBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlRadius}" />
+        <Setter Property="MinHeight" Value="{DynamicResource ControlHeight}" />
+        <Setter Property="Padding" Value="13,5" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ContentPresenter Name="PART_ContentPresenter" Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="Button:pointerover">
+        <Setter Property="Foreground" Value="{DynamicResource ButtonOffTextHoverBrush}" />
+    </Style>
+
+    <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource ButtonOffTextHoverBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ButtonOffHoverBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+    </Style>
+
+    <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ButtonOffHoverBrush}" />
+    </Style>
+
+    <Style Selector="Button:focus-visible /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonOnBrush}" />
+    </Style>
+
+    <Style Selector="Button.danger">
+        <Setter Property="Foreground" Value="{DynamicResource RedBrush}" />
+        <Setter Property="FontSize" Value="{DynamicResource LabelFontSize}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="Button.danger:pointerover">
+        <Setter Property="Foreground" Value="{DynamicResource RedBrush}" />
+    </Style>
+
+    <Style Selector="Button.danger:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource RedBrush}" />
+    </Style>
+
+    <Style Selector="Button.compact">
+        <Setter Property="MinHeight" Value="22" />
+        <Setter Property="Height" Value="22" />
+        <Setter Property="Padding" Value="8,2" />
+    </Style>
+
+    <Style Selector="Button:disabled, RadioButton.segment:disabled, ToggleButton:disabled, CheckBox:disabled">
+        <Setter Property="Opacity" Value="{DynamicResource DisabledControlOpacity}" />
+    </Style>
+
+    <Style Selector="RadioButton.segment">
+        <Setter Property="Background" Value="{DynamicResource TransparentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ButtonOffTextBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource TransparentBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Padding" Value="8,3" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <ContentPresenter Name="PART_ContentPresenter" Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" Padding="{TemplateBinding Padding}" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="RadioButton.segment:pointerover">
+        <Setter Property="Foreground" Value="{DynamicResource ButtonOffTextHoverBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ButtonOffHoverBrush}" />
+    </Style>
+
+    <Style Selector="RadioButton.segment:checked">
+        <Setter Property="Background" Value="{DynamicResource ButtonOnBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ButtonOnTextBrush}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="RadioButton.segment:checked:pointerover">
+        <Setter Property="Foreground" Value="{DynamicResource ButtonOnTextHoverBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ButtonOnHoverBrush}" />
+    </Style>
+
+    <Style Selector="RadioButton.segment /template/ ContentPresenter#PART_ContentPresenter, RadioButton.segment:pointerover /template/ ContentPresenter#PART_ContentPresenter, RadioButton.segment:pressed /template/ ContentPresenter#PART_ContentPresenter, RadioButton.segment:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Foreground" Value="{Binding $parent[RadioButton].Foreground}" />
+    </Style>
+
+    <Style Selector="RadioButton.segment:focus-visible">
+        <Setter Property="BorderBrush" Value="{DynamicResource TitleBrush}" />
+    </Style>
+
+    <Style Selector="ToggleButton">
+        <Setter Property="Width" Value="86" />
+        <Setter Property="Height" Value="29" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Name="SwitchFrame" Background="{DynamicResource BackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" CornerRadius="{DynamicResource ControlRadius}" Padding="2">
+                    <Grid ColumnDefinitions="*,*">
+                        <Border Name="OffSegment" CornerRadius="4" Background="{DynamicResource ButtonOffBrush}">
+                            <TextBlock Name="OffLabel" Text="OFF" FontSize="9" Foreground="{DynamicResource ButtonOffTextBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <Border Name="OnSegment" Grid.Column="1" CornerRadius="4">
+                            <TextBlock Name="OnLabel" Text="ON" FontSize="9" Foreground="{DynamicResource ButtonOffTextBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="ToggleButton:checked /template/ Border#OffSegment">
+        <Setter Property="Background" Value="{DynamicResource TransparentBrush}" />
+    </Style>
+
+    <Style Selector="ToggleButton:checked /template/ Border#OnSegment">
+        <Setter Property="Background" Value="{DynamicResource ButtonOnBrush}" />
+    </Style>
+
+    <Style Selector="ToggleButton:checked /template/ TextBlock#OnLabel">
+        <Setter Property="Foreground" Value="{DynamicResource ButtonOnTextBrush}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="ToggleButton:focus-visible /template/ Border#SwitchFrame">
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonOnBrush}" />
+    </Style>
+
+    <Style Selector="ToggleButton:not(:checked):pointerover /template/ Border#OffSegment">
+        <Setter Property="Background" Value="{DynamicResource ButtonOffHoverBrush}" />
+    </Style>
+
+    <Style Selector="ToggleButton:not(:checked):pointerover /template/ TextBlock#OffLabel">
+        <Setter Property="Foreground" Value="{DynamicResource ButtonOffTextHoverBrush}" />
+    </Style>
+
+    <Style Selector="ToggleButton:checked:pointerover /template/ Border#OnSegment">
+        <Setter Property="Background" Value="{DynamicResource ButtonOnHoverBrush}" />
+    </Style>
+
+    <Style Selector="ToggleButton:checked:pointerover /template/ TextBlock#OnLabel">
+        <Setter Property="Foreground" Value="{DynamicResource ButtonOnTextHoverBrush}" />
+    </Style>
+
+    <Style Selector="Button.icon-button">
+        <Setter Property="Width" Value="34" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Padding" Value="7" />
+    </Style>
+
+    <Style Selector="CheckBox">
+        <Setter Property="FontSize" Value="{DynamicResource BodyFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Setter Property="MinHeight" Value="22" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid ColumnDefinitions="16,*" ColumnSpacing="8" Background="{DynamicResource TransparentBrush}">
+                    <Border Name="CheckFrame" Width="14" Height="14" CornerRadius="3" Background="{DynamicResource BackgroundBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" VerticalAlignment="Center">
+                        <Path Name="CheckMark" Data="M 0,4 L 3,7 L 9,0" Width="9" Height="7" HorizontalAlignment="Center" VerticalAlignment="Center" Stroke="{DynamicResource ButtonOnTextBrush}" StrokeThickness="1.5" IsVisible="False" />
+                    </Border>
+                    <ContentPresenter Grid.Column="1" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" Foreground="{TemplateBinding Foreground}" HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" VerticalAlignment="Center" />
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="CheckBox:checked /template/ Border#CheckFrame">
+        <Setter Property="Background" Value="{DynamicResource ButtonOnBrush}" />
+    </Style>
+
+    <Style Selector="CheckBox:checked /template/ Path#CheckMark">
+        <Setter Property="IsVisible" Value="True" />
+    </Style>
+
+    <Style Selector="CheckBox:pointerover /template/ Border#CheckFrame">
+        <Setter Property="Background" Value="{DynamicResource ButtonOffHoverBrush}" />
+    </Style>
+
+    <Style Selector="CheckBox:checked:pointerover /template/ Border#CheckFrame">
+        <Setter Property="Background" Value="{DynamicResource ButtonOnHoverBrush}" />
+    </Style>
+
+    <Style Selector="CheckBox:checked:pointerover /template/ Path#CheckMark">
+        <Setter Property="Stroke" Value="{DynamicResource ButtonOnTextHoverBrush}" />
+    </Style>
+
+    <Style Selector="CheckBox:focus-visible /template/ Border#CheckFrame">
+        <Setter Property="BorderBrush" Value="{DynamicResource TitleBrush}" />
+    </Style>
+</Styles>

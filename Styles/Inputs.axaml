@@ -1,0 +1,100 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Styles.Resources>
+        <!-- Keep the numeric editor borderless; its spinner owns the outer frame. -->
+        <ControlTheme x:Key="NumericEditorTheme" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Style Selector="^ /template/ Border#PART_BorderElement, ^:focus /template/ Border#PART_BorderElement, ^:pointerover /template/ Border#PART_BorderElement, ^:disabled /template/ Border#PART_BorderElement">
+                <Setter Property="Background" Value="{DynamicResource TransparentBrush}" />
+                <Setter Property="BorderThickness" Value="0" />
+            </Style>
+        </ControlTheme>
+
+        <ControlTheme x:Key="SpinnerButtonTheme" TargetType="RepeatButton">
+            <Setter Property="Foreground" Value="{DynamicResource ButtonOffTextBrush}" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="MinHeight" Value="0" />
+            <Setter Property="MinWidth" Value="0" />
+            <Setter Property="Background" Value="{DynamicResource TransparentBrush}" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <ContentPresenter Name="PART_ContentPresenter" Background="{TemplateBinding Background}" Content="{TemplateBinding Content}" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+                </ControlTemplate>
+            </Setter>
+            <Style Selector="^:pointerover">
+                <Setter Property="Foreground" Value="{DynamicResource ButtonOffTextHoverBrush}" />
+                <Setter Property="Background" Value="{DynamicResource ButtonOffHoverBrush}" />
+            </Style>
+            <Style Selector="^:pressed">
+                <Setter Property="Background" Value="{DynamicResource ButtonOffBrush}" />
+            </Style>
+            <Style Selector="^:disabled">
+                <Setter Property="Opacity" Value="{DynamicResource DisabledControlOpacity}" />
+            </Style>
+        </ControlTheme>
+    </Styles.Resources>
+
+    <Style Selector="TextBox, NumericUpDown">
+        <Setter Property="Cursor" Value="Ibeam" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="MinHeight" Value="{DynamicResource ControlHeight}" />
+        <Setter Property="Height" Value="{DynamicResource ControlHeight}" />
+        <Setter Property="FontSize" Value="{DynamicResource InputFontSize}" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlRadius}" />
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style Selector="TextBox">
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="NumericUpDown">
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FormatString" Value="0" />
+        <Setter Property="ClipValueToMinMax" Value="True" />
+    </Style>
+
+    <Style Selector="NumericUpDown /template/ TextBox">
+        <Setter Property="Theme" Value="{StaticResource NumericEditorTheme}" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Height" Value="NaN" />
+        <Setter Property="Margin" Value="0" />
+    </Style>
+
+    <Style Selector="NumericUpDown.compact">
+        <Setter Property="MinHeight" Value="27" />
+        <Setter Property="Height" Value="27" />
+    </Style>
+
+    <Style Selector="NumericUpDown:focus-within /template/ ButtonSpinner">
+        <Setter Property="BorderBrush" Value="{DynamicResource ButtonOnBrush}" />
+    </Style>
+
+    <Style Selector="NumericUpDown /template/ ButtonSpinner">
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid>
+                    <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}" />
+                    <Grid ColumnDefinitions="*,Auto" Margin="{TemplateBinding BorderThickness}">
+                        <ContentPresenter Name="PART_ContentPresenter" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" />
+                        <Border Grid.Column="1" Width="21" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1,0,0,0" CornerRadius="0,6,6,0" ClipToBounds="True" Background="{DynamicResource ButtonOffBrush}" IsVisible="{TemplateBinding ShowButtonSpinner}">
+                            <Grid RowDefinitions="*,*">
+                                <RepeatButton Name="PART_IncreaseButton" Theme="{StaticResource SpinnerButtonTheme}" AutomationProperties.Name="Increase value">
+                                    <Path Data="M 0,4 L 4,0 L 8,4" Stroke="{Binding $parent[RepeatButton].Foreground}" StrokeThickness="1.3" Width="8" Height="4" />
+                                </RepeatButton>
+                                <RepeatButton Name="PART_DecreaseButton" Grid.Row="1" Theme="{StaticResource SpinnerButtonTheme}" AutomationProperties.Name="Decrease value">
+                                    <Path Data="M 0,0 L 4,4 L 8,0" Stroke="{Binding $parent[RepeatButton].Foreground}" StrokeThickness="1.3" Width="8" Height="4" />
+                                </RepeatButton>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{TemplateBinding CornerRadius}" IsHitTestVisible="False" />
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>
