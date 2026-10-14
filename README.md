@@ -47,6 +47,24 @@ Run AutoClicker as your normal desktop user. The desktop-entry script registers 
 
 After changing the code, use `dotnet run` to rebuild and launch. `dotnet run --no-build` requires an existing build; it will fail if the build output has been removed.
 
+## Build an AppImage
+
+On x86_64 Linux, install the .NET 10 SDK, Bash, `curl`, and Python 3, then run:
+
+```bash
+bash Tools/build-appimage.sh
+```
+
+The script creates `Releases/AutoClicker-x86_64.AppImage` inside the project. It publishes a self-contained Release build, downloads and verifies the official `appimagetool`, and removes temporary packaging files when finished. Internet access is required. `Releases` is excluded from Git and project source files.
+
+The package includes .NET and reuses the existing app icon internally. It does not install a desktop entry or desktop icons. KDE Wayland and the system dependencies in the Requirements table are still required on the target machine; the .NET SDK is only needed to build.
+
+Launch the result as your normal desktop user:
+
+```bash
+./Releases/AutoClicker-x86_64.AppImage
+```
+
 ## Permissions
 
 ### Clicking and macro playback
