@@ -1,5 +1,9 @@
-<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:views="using:AutoClicker.Views" mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="688" x:Class="AutoClicker.MainWindow" Title="AutoClicker" Icon="avares://AutoClicker/Assets/Icons/icon.ico" Width="960" Height="688" CanResize="False" CanMaximize="False" TransparencyLevelHint="Transparent" Background="{DynamicResource TransparentBrush}" ExtendClientAreaToDecorationsHint="True" ExtendClientAreaTitleBarHeightHint="{StaticResource TitleBarHeight}" WindowDecorationsTheme="{StaticResource AppWindowDecorations}" WindowStartupLocation="CenterScreen">
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:views="using:AutoClicker.Views" xmlns:vm="using:AutoClicker.ViewModels" x:DataType="vm:MainViewModel" x:CompileBindings="True" mc:Ignorable="d" d:DesignWidth="960" d:DesignHeight="688" x:Class="AutoClicker.MainWindow" Title="AutoClicker" Icon="avares://AutoClicker/Assets/Icons/icon.ico" Width="960" Height="688" CanResize="False" CanMaximize="False" TransparencyLevelHint="Transparent" Background="{DynamicResource TransparentBrush}" ExtendClientAreaToDecorationsHint="True" ExtendClientAreaTitleBarHeightHint="{StaticResource TitleBarHeight}" WindowDecorationsTheme="{StaticResource AppWindowDecorations}" WindowStartupLocation="CenterScreen">
+    <Window.Styles>
+        <Style Selector="TextBlock.permission-warning"><Setter Property="Foreground" Value="{DynamicResource RedBrush}" /></Style>
+    </Window.Styles>
     <Border Background="{DynamicResource BackgroundBrush}" CornerRadius="{DynamicResource WindowCornerRadius}" ClipToBounds="True">
+        <Grid RowDefinitions="*,Auto">
         <TabControl Name="MainNavigation" Classes="main-navigation" SelectedIndex="0">
             <TabItem Header="Clicker">
                 <views:ClickerView />
@@ -11,5 +15,18 @@
                 <views:AboutView />
             </TabItem>
         </TabControl>
+        <Border Grid.Row="1" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,1,0,0" Padding="18,14">
+            <StackPanel Spacing="8" VerticalAlignment="Center">
+                <TextBlock Text="{Binding ErrorText}" IsVisible="{Binding HasError}" Classes="description" Foreground="{DynamicResource RedBrush}" TextWrapping="Wrap" />
+                <TextBlock Text="{Binding StorageMessage}" IsVisible="{Binding HasStorageMessage}" Classes="description" Foreground="{DynamicResource RedBrush}" TextWrapping="Wrap" />
+                <Grid ColumnDefinitions="140,140,*,Auto" ColumnSpacing="10" MinHeight="{DynamicResource ControlHeight}" VerticalAlignment="Center">
+                    <Button Name="StartButton" Content="{Binding StartLabel}" Command="{Binding StartCommand}" Height="{DynamicResource ControlHeight}" HorizontalAlignment="Stretch" VerticalAlignment="Center" AutomationProperties.Name="Start or stop clicking" />
+                    <Button Name="StopButton" Grid.Column="1" Content="Stop" Command="{Binding StopCommand}" Height="{DynamicResource ControlHeight}" HorizontalAlignment="Stretch" VerticalAlignment="Center" AutomationProperties.Name="Stop clicking or macro playback" />
+                    <TextBlock Name="StatusText" Grid.Column="2" Text="{Binding Status}" Classes="description" Classes.permission-warning="{Binding HasPermissionWarning}" TextWrapping="Wrap" VerticalAlignment="Center" />
+                    <Button Grid.Column="3" Content="{Binding ConfigureLabel}" Command="{Binding ConfigureCommand}" Height="{DynamicResource ControlHeight}" HorizontalAlignment="Right" VerticalAlignment="Center" AutomationProperties.Name="Configure global shortcuts" />
+                </Grid>
+            </StackPanel>
+        </Border>
+        </Grid>
     </Border>
 </Window>

@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:views="using:AutoClicker.Views" xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia" x:Class="AutoClicker.Views.MacrosView">
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:vm="using:AutoClicker.ViewModels" x:DataType="vm:MainViewModel" x:CompileBindings="True" xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia" x:Class="AutoClicker.Views.MacrosView">
 
     <UserControl.Styles>
         <Style Selector="Border.macro-panel">
@@ -24,28 +24,28 @@
                     <StackPanel Spacing="14">
                         <StackPanel Spacing="3">
                             <TextBlock Classes="section-title" Text="Macro Recorder" />
-                            <TextBlock Classes="description" Text="Record your mouse and keyboard actions." />
+                            <TextBlock Classes="description" Text="Record mouse clicks and keyboard input." />
                         </StackPanel>
                         <Grid ColumnDefinitions="1.4*,*,*" ColumnSpacing="10" Height="90">
-                            <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" AutomationProperties.Name="Record macro">
+                            <Button Name="RecordButton" Command="{Binding RecordCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" AutomationProperties.Name="{Binding RecordLabel}">
                                 <Grid ColumnDefinitions="52,*" ColumnSpacing="12">
                                     <svg:Svg Classes="action-icon" Path="/Assets/Icons/record.svg" Width="52" Height="52" />
                                     <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
-                                        <TextBlock Classes="section-title" Text="Record" />
-                                        <TextBlock Classes="description" Text="Start recording your actions" />
+                                        <TextBlock Classes="section-title" Text="{Binding RecordLabel}" TextWrapping="Wrap" />
+                                        <TextBlock Classes="description" Text="{Binding RecordDescription}" />
                                     </StackPanel>
                                 </Grid>
                             </Button>
                             <Border Grid.Column="1" Classes="macro-panel">
                                 <StackPanel Spacing="7" VerticalAlignment="Center">
                                     <TextBlock Classes="description" Text="Start Recording Hotkey" />
-                                    <TextBox Text="Ctrl + F1" AutomationProperties.Name="Start recording hotkey" />
+                                    <Button Content="{Binding RecordStartHotkey}" Command="{Binding ConfigureCommand}" AutomationProperties.Name="Start recording hotkey" />
                                 </StackPanel>
                             </Border>
                             <Border Grid.Column="2" Classes="macro-panel">
                                 <StackPanel Spacing="7" VerticalAlignment="Center">
                                     <TextBlock Classes="description" Text="Stop Recording Hotkey" />
-                                    <TextBox Text="Ctrl + F2" AutomationProperties.Name="Stop recording hotkey" />
+                                    <Button Content="{Binding RecordStopHotkey}" Command="{Binding ConfigureCommand}" AutomationProperties.Name="Stop recording hotkey" />
                                 </StackPanel>
                             </Border>
                         </Grid>
@@ -53,10 +53,9 @@
                     <Border Grid.Column="1" Classes="macro-panel">
                         <StackPanel Spacing="2">
                             <TextBlock Classes="label" Text="Recording Options" Margin="0,0,0,4" />
-                            <CheckBox Content="Record mouse movements" IsChecked="True" />
-                            <CheckBox Content="Record mouse clicks" IsChecked="True" />
-                            <CheckBox Content="Record keyboard input" IsChecked="True" />
-                            <CheckBox Content="Record scroll wheel" />
+                            <CheckBox Content="Record mouse clicks" IsChecked="{Binding RecordClicks, Mode=TwoWay}" IsEnabled="{Binding SettingsEditable}" />
+                            <CheckBox Content="Record keyboard input" IsChecked="{Binding RecordKeyboard, Mode=TwoWay}" IsEnabled="{Binding SettingsEditable}" />
+                            <TextBlock Classes="description" Text="Clicks save their cursor position." TextWrapping="Wrap" />
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -68,45 +67,45 @@
                             <TextBlock Classes="section-title" Text="Recorded Macros" />
                             <TextBlock Classes="description" Text="Manage your recorded macros." />
                         </StackPanel>
-                        <TextBox Grid.Column="1" PlaceholderText="Search..." VerticalAlignment="Center" AutomationProperties.Name="Search macros" />
+                        <TextBox Grid.Column="1" Text="{Binding Search, Mode=TwoWay}" PlaceholderText="Search..." VerticalAlignment="Center" AutomationProperties.Name="Search macros" />
                     </Grid>
                     <StackPanel Spacing="5">
                         <Border Classes="macro-panel" Padding="9,9" Background="{DynamicResource ButtonOffBrush}">
                             <!-- Keep these column widths aligned with the item template below. -->
                             <Grid Classes="macro-columns" ColumnDefinitions="20,*,120,164,65,126,114">
-                                <TextBlock Grid.Column="1" Classes="table-heading" Text="Name  ↕" />
-                                <TextBlock Grid.Column="2" Classes="table-heading" Text="Hotkey (Play)  ↕" />
-                                <TextBlock Grid.Column="3" Classes="table-heading" Text="Repeat  ↕" />
-                                <TextBlock Grid.Column="4" Classes="table-heading" Text="Length  ↕" />
-                                <TextBlock Grid.Column="5" Classes="table-heading" Text="Created  ↕" />
+                                <Button Grid.Column="1" Classes="compact" Content="Name  ↕" Command="{Binding SortCommand}" CommandParameter="Name" />
+                                <Button Grid.Column="2" Classes="compact" Content="Hotkey (Play)  ↕" Command="{Binding SortCommand}" CommandParameter="Hotkey" />
+                                <Button Grid.Column="3" Classes="compact" Content="Repeat  ↕" Command="{Binding SortCommand}" CommandParameter="Repeat" />
+                                <Button Grid.Column="4" Classes="compact" Content="Length  ↕" Command="{Binding SortCommand}" CommandParameter="Length" />
+                                <Button Grid.Column="5" Classes="compact" Content="Created  ↕" Command="{Binding SortCommand}" CommandParameter="Created" />
                                 <TextBlock Grid.Column="6" Classes="table-heading" Text="Actions" />
                             </Grid>
                         </Border>
-                        <ItemsControl Name="MacroItems">
+                        <ItemsControl Name="MacroItems" ItemsSource="{Binding VisibleMacros}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate><StackPanel Spacing="5" /></ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="views:MacroPreviewItem" x:CompileBindings="True">
-                                    <Border Classes="macro-panel" Padding="9,8" Background="{DynamicResource BackgroundBrush}">
+                                <DataTemplate x:DataType="vm:MacroViewModel" x:CompileBindings="True">
+                                    <Border Classes="macro-panel" Padding="9,8" Background="{DynamicResource BackgroundBrush}" DragDrop.AllowDrop="True" DragDrop.DragOver="OnDragOver" DragDrop.Drop="OnDrop">
                                         <Grid Classes="macro-columns" ColumnDefinitions="20,*,120,164,65,126,114">
-                                            <TextBlock Text="⠿" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" FontSize="16" IsHitTestVisible="False" />
+                                            <TextBlock Text="⠿" Foreground="{DynamicResource TextBrush}" VerticalAlignment="Center" FontSize="16" PointerPressed="OnDragHandlePressed" Cursor="SizeAll" IsEnabled="{Binding Owner.CanReorder}" ToolTip.Tip="Drag to reorder; clear search and sorting first" />
                                             <TextBlock Grid.Column="1" Text="{Binding Name}" FontWeight="SemiBold" Foreground="{DynamicResource TitleBrush}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-                                            <TextBox Grid.Column="2" Text="{Binding Hotkey, Mode=TwoWay}" AutomationProperties.Name="Macro play hotkey" />
+                                            <Button Grid.Column="2" Content="{Binding Hotkey}" Command="{Binding Owner.ConfigureCommand}" AutomationProperties.Name="Macro play hotkey" />
                                             <Grid Grid.Column="3" ColumnDefinitions="72,*" ColumnSpacing="8">
-                                                <NumericUpDown Value="{Binding Repeat, Mode=TwoWay}" Minimum="0" AutomationProperties.Name="Repeat count" />
-                                                <CheckBox Grid.Column="1" Content="Infinite" IsChecked="{Binding Infinite, Mode=TwoWay}" />
+                                                <NumericUpDown Value="{Binding Repeat, Mode=TwoWay}" Minimum="1" Maximum="1000000" IsEnabled="{Binding RepeatEditable}" AutomationProperties.Name="Repeat count" />
+                                                <CheckBox Grid.Column="1" Content="Infinite" IsChecked="{Binding Infinite, Mode=TwoWay}" IsEnabled="{Binding Owner.SettingsEditable}" />
                                             </Grid>
                                             <TextBlock Grid.Column="4" Text="{Binding Length}" VerticalAlignment="Center" />
                                             <TextBlock Grid.Column="5" Text="{Binding Created}" VerticalAlignment="Center" />
                                             <StackPanel Grid.Column="6" Orientation="Horizontal" Spacing="6">
-                                                <Button Classes="icon-button" ToolTip.Tip="Play macro" AutomationProperties.Name="Play macro">
+                                                <Button Classes="icon-button" ToolTip.Tip="{Binding PlayTip}" AutomationProperties.Name="Play macro" Command="{Binding Owner.PlayMacroCommand}" CommandParameter="{Binding}">
                                                     <svg:Svg Classes="action-icon" Path="/Assets/Icons/play.svg" />
                                                 </Button>
-                                                <Button Classes="icon-button" ToolTip.Tip="Edit macro" AutomationProperties.Name="Edit macro">
+                                                <Button Classes="icon-button" ToolTip.Tip="Edit macro" AutomationProperties.Name="Edit macro" Command="{Binding Owner.EditMacroCommand}" CommandParameter="{Binding}">
                                                     <svg:Svg Classes="action-icon" Path="/Assets/Icons/edit.svg" />
                                                 </Button>
-                                                <Button Classes="icon-button danger" ToolTip.Tip="Delete macro" AutomationProperties.Name="Delete macro">
+                                                <Button Classes="icon-button danger" ToolTip.Tip="Delete macro" AutomationProperties.Name="Delete macro" Command="{Binding Owner.DeleteMacroCommand}" CommandParameter="{Binding}">
                                                     <svg:Svg Classes="action-icon" Path="/Assets/Icons/delete.svg" />
                                                 </Button>
                                             </StackPanel>
@@ -114,10 +113,8 @@
                                     </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
-                             <views:MacroPreviewItem Name="Gather Resources" Hotkey="Ctrl + 1" Repeat="3" Length="12.4s" Created="2026-10-05 14:22" />
-                            <!-- <views:MacroPreviewItem Name="Gather Resources" Hotkey="Ctrl + 2" Repeat="1" Length="8.7s" Created="2026-10-05 16:10" /> -->
-                            <!-- <views:MacroPreviewItem Name="Gather Resources" Hotkey="Ctrl + 3" Repeat="10" Length="6.1s" Created="2026-10-04 20:33" /> -->
                         </ItemsControl>
+                        <TextBlock Text="{Binding EmptyMacroText}" IsVisible="{Binding NoVisibleMacros}" Classes="description" Margin="8,12" />
                     </StackPanel>
                 </StackPanel>
             </Border>

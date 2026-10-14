@@ -1,4 +1,4 @@
-<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia" x:Class="AutoClicker.Views.ClickerView">
+<UserControl xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Svg.Controls.Skia.Avalonia" xmlns:vm="using:AutoClicker.ViewModels" x:DataType="vm:MainViewModel" x:CompileBindings="True" x:Class="AutoClicker.Views.ClickerView">
 
     <UserControl.Styles>
         <Style Selector="Border.card.stop-card">
@@ -10,7 +10,7 @@
     </UserControl.Styles>
 
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="{StaticResource PageMargin}" ColumnDefinitions="1.05*,*" ColumnSpacing="11">
+        <Grid Margin="{StaticResource PageMargin}" ColumnDefinitions="1.05*,*" ColumnSpacing="11" IsEnabled="{Binding SettingsEditable}">
             <StackPanel Spacing="{StaticResource PageSpacing}">
                 <Border Classes="card">
                     <StackPanel Spacing="11">
@@ -20,27 +20,28 @@
                         </StackPanel>
 
                         <Grid ColumnDefinitions="94,Auto,*" ColumnSpacing="14" Margin="0,3,0,0">
-                            <NumericUpDown Value="100" Minimum="1" Height="37" AutomationProperties.Name="Click rate" />
+                            <NumericUpDown Name="RateInput" Value="{Binding Settings.Rate, Mode=TwoWay}" Minimum="1" Maximum="1000" Height="37" AutomationProperties.Name="Click rate" />
                             <TextBlock Grid.Column="1" Classes="label" Text="Clicks Per" />
                             <Border Grid.Column="2" Classes="segments" Height="37">
                                 <UniformGrid Columns="4">
-                                    <RadioButton Classes="segment" GroupName="ClickRateUnit" Content="s" IsChecked="True" AutomationProperties.Name="Clicks per second" ToolTip.Tip="Seconds" />
-                                    <RadioButton Classes="segment" GroupName="ClickRateUnit" Content="m" AutomationProperties.Name="Clicks per minute" ToolTip.Tip="Minutes" />
-                                    <RadioButton Classes="segment" GroupName="ClickRateUnit" Content="h" AutomationProperties.Name="Clicks per hour" ToolTip.Tip="Hours" />
-                                    <RadioButton Classes="segment" GroupName="ClickRateUnit" Content="d" AutomationProperties.Name="Clicks per day" ToolTip.Tip="Days" />
+                                    <RadioButton Classes="segment" GroupName="ClickRateUnit" Content="s" IsChecked="{Binding Settings.RateUnitSecond, Mode=TwoWay}" AutomationProperties.Name="Clicks per second" ToolTip.Tip="Seconds" />
+                                    <RadioButton Classes="segment" GroupName="ClickRateUnit" Content="m" IsChecked="{Binding Settings.RateUnitMinute, Mode=TwoWay}" AutomationProperties.Name="Clicks per minute" ToolTip.Tip="Minutes" />
+                                    <RadioButton Classes="segment" GroupName="ClickRateUnit" Content="h" IsChecked="{Binding Settings.RateUnitHour, Mode=TwoWay}" AutomationProperties.Name="Clicks per hour" ToolTip.Tip="Hours" />
+                                    <RadioButton Classes="segment" GroupName="ClickRateUnit" Content="d" IsChecked="{Binding Settings.RateUnitDay, Mode=TwoWay}" AutomationProperties.Name="Clicks per day" ToolTip.Tip="Days" />
                                 </UniformGrid>
                             </Border>
                         </Grid>
 
+                        <TextBlock Classes="description" Text="{Binding RateFeedback}" TextWrapping="Wrap" />
                         <Border Classes="divider" />
 
                         <Grid ColumnDefinitions="101,*,139" ColumnSpacing="13">
                             <TextBlock Classes="label" Text="Hotkey" />
-                            <TextBox Grid.Column="1" Text="Ctrl + Y" AutomationProperties.Name="Hotkey" ToolTip.Tip="Hotkey preview" />
+                            <Button Grid.Column="1" Content="{Binding ActivationHotkey}" Command="{Binding ConfigureCommand}" AutomationProperties.Name="Hotkey" ToolTip.Tip="Edit the actual desktop shortcut in KDE" />
                             <Border Grid.Column="2" Classes="segments">
                                 <UniformGrid Columns="2">
-                                    <RadioButton Classes="segment" GroupName="ActivationMode" Content="Toggle" IsChecked="True" AutomationProperties.Name="Toggle activation" />
-                                    <RadioButton Classes="segment" GroupName="ActivationMode" Content="Hold" AutomationProperties.Name="Hold activation" />
+                                    <RadioButton Classes="segment" GroupName="ActivationMode" Content="Toggle" IsChecked="{Binding Settings.ActivationToggle, Mode=TwoWay}" AutomationProperties.Name="Toggle activation" />
+                                    <RadioButton Classes="segment" GroupName="ActivationMode" Content="Hold" IsChecked="{Binding Settings.ActivationHold, Mode=TwoWay}" AutomationProperties.Name="Hold activation" />
                                 </UniformGrid>
                             </Border>
                         </Grid>
@@ -51,9 +52,9 @@
                             <TextBlock Classes="label" Text="Mouse Button" />
                             <Border Grid.Column="1" Classes="segments" Height="35">
                                 <UniformGrid Columns="3">
-                                    <RadioButton Classes="segment" GroupName="MouseButton" Content="Left" IsChecked="True" AutomationProperties.Name="Left mouse button" />
-                                    <RadioButton Classes="segment" GroupName="MouseButton" Content="Middle" AutomationProperties.Name="Middle mouse button" />
-                                    <RadioButton Classes="segment" GroupName="MouseButton" Content="Right" AutomationProperties.Name="Right mouse button" />
+                                    <RadioButton Classes="segment" GroupName="MouseButton" Content="Left" IsChecked="{Binding Settings.ButtonLeft, Mode=TwoWay}" AutomationProperties.Name="Left mouse button" />
+                                    <RadioButton Classes="segment" GroupName="MouseButton" Content="Middle" IsChecked="{Binding Settings.ButtonMiddle, Mode=TwoWay}" AutomationProperties.Name="Middle mouse button" />
+                                    <RadioButton Classes="segment" GroupName="MouseButton" Content="Right" IsChecked="{Binding Settings.ButtonRight, Mode=TwoWay}" AutomationProperties.Name="Right mouse button" />
                                 </UniformGrid>
                             </Border>
                         </Grid>
@@ -63,10 +64,10 @@
                 <Border Classes="card">
                     <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,101" RowSpacing="10" ColumnSpacing="16">
                         <TextBlock Classes="section-title" Text="Double Click" VerticalAlignment="Center" />
-                        <ToggleButton Grid.Column="1" IsChecked="False" HorizontalAlignment="Right" AutomationProperties.Name="Double click" />
+                        <ToggleButton Grid.Column="1" IsChecked="{Binding Settings.DoubleClick, Mode=TwoWay}" HorizontalAlignment="Right" AutomationProperties.Name="Double click" />
                         <TextBlock Grid.Row="1" Classes="description" MaxWidth="264" HorizontalAlignment="Left" Text="Fires the button twice per interval with a configurable delay between the clicks." />
                         <StackPanel Grid.Row="1" Grid.Column="1" Spacing="4">
-                            <NumericUpDown Value="18" Minimum="0" AutomationProperties.Name="Double click delay in milliseconds">
+                            <NumericUpDown Name="DoubleDelayMsInput" Value="{Binding Settings.DoubleDelayMs, Mode=TwoWay}" Minimum="0" IsEnabled="{Binding Settings.DoubleDelayEditable}" AutomationProperties.Name="Double click delay in milliseconds">
                                 <NumericUpDown.InnerRightContent><TextBlock Classes="unit" Text="ms" /></NumericUpDown.InnerRightContent>
                             </NumericUpDown>
                             <TextBlock Classes="caption" Text="Delay" HorizontalAlignment="Center" />
@@ -78,12 +79,12 @@
                     <StackPanel Spacing="11">
                         <Grid ColumnDefinitions="*,88,86" ColumnSpacing="13">
                             <TextBlock Classes="section-title" Text="Duty Cycle" VerticalAlignment="Center" />
-                            <NumericUpDown Grid.Column="1" Value="45" Minimum="0" Maximum="100" AutomationProperties.Name="Duty cycle percentage">
+                            <NumericUpDown Name="DutyPercentInput" Grid.Column="1" Value="{Binding Settings.DutyPercent, Mode=TwoWay}" Minimum="0" Maximum="100" IsEnabled="{Binding Settings.DutyEditable}" AutomationProperties.Name="Duty cycle percentage">
                                 <NumericUpDown.InnerRightContent><TextBlock Classes="unit" Text="%" /></NumericUpDown.InnerRightContent>
                             </NumericUpDown>
-                            <ToggleButton Grid.Column="2" IsChecked="True" AutomationProperties.Name="Duty cycle" />
+                            <ToggleButton Grid.Column="2" IsChecked="{Binding Settings.DutyEnabled, Mode=TwoWay}" AutomationProperties.Name="Duty cycle" />
                         </Grid>
-                        <TextBlock Classes="description" MaxWidth="312" HorizontalAlignment="Left" Text="Randomizes how long the mouse button stays held between clicks." />
+                        <TextBlock Classes="description" MaxWidth="312" HorizontalAlignment="Left" Text="Holds the mouse button for this percentage of each cycle." />
                     </StackPanel>
                 </Border>
 
@@ -91,10 +92,10 @@
                     <StackPanel Spacing="11">
                         <Grid ColumnDefinitions="*,88,86" ColumnSpacing="13">
                             <TextBlock Classes="section-title" Text="Speed Variation" VerticalAlignment="Center" />
-                            <NumericUpDown Grid.Column="1" Value="35" Minimum="0" Maximum="100" AutomationProperties.Name="Speed variation percentage">
+                            <NumericUpDown Name="VariationPercentInput" Grid.Column="1" Value="{Binding Settings.VariationPercent, Mode=TwoWay}" Minimum="0" Maximum="100" IsEnabled="{Binding Settings.VariationEditable}" AutomationProperties.Name="Speed variation percentage">
                                 <NumericUpDown.InnerRightContent><TextBlock Classes="unit" Text="%" /></NumericUpDown.InnerRightContent>
                             </NumericUpDown>
-                            <ToggleButton Grid.Column="2" IsChecked="True" AutomationProperties.Name="Speed variation" />
+                            <ToggleButton Grid.Column="2" IsChecked="{Binding Settings.VariationEnabled, Mode=TwoWay}" AutomationProperties.Name="Speed variation" />
                         </Grid>
                         <TextBlock Classes="description" MaxWidth="312" HorizontalAlignment="Left" Text="Randomizes click timing around your configured speed by up to this percentage." />
                     </StackPanel>
@@ -105,23 +106,23 @@
                 <Border Classes="card">
                     <Grid ColumnDefinitions="*,117,86" ColumnSpacing="10">
                         <TextBlock Classes="section-title" Text="Click Limit" VerticalAlignment="Center" />
-                        <NumericUpDown Grid.Column="1" Value="1000" Minimum="1" AutomationProperties.Name="Maximum click count" />
-                        <ToggleButton Grid.Column="2" IsChecked="False" AutomationProperties.Name="Click limit" />
+                        <NumericUpDown Name="ClickLimitInput" Grid.Column="1" Value="{Binding Settings.ClickLimit, Mode=TwoWay}" Minimum="1" IsEnabled="{Binding Settings.ClickLimitEditable}" AutomationProperties.Name="Maximum click count" />
+                        <ToggleButton Grid.Column="2" IsChecked="{Binding Settings.ClickLimitEnabled, Mode=TwoWay}" AutomationProperties.Name="Click limit" />
                     </Grid>
                 </Border>
 
                 <Border Classes="card">
                     <Grid ColumnDefinitions="*,64,96,86" ColumnSpacing="10">
                         <TextBlock Classes="section-title" Text="Time Limit" VerticalAlignment="Center" />
-                        <NumericUpDown Grid.Column="1" Value="60" Minimum="1" AutomationProperties.Name="Time limit duration" />
+                        <NumericUpDown Name="TimeLimitInput" Grid.Column="1" Value="{Binding Settings.TimeLimit, Mode=TwoWay}" Minimum="1" IsEnabled="{Binding Settings.TimeLimitEditable}" AutomationProperties.Name="Time limit duration" />
                         <Border Grid.Column="2" Classes="segments">
                             <UniformGrid Columns="3">
-                                <RadioButton Classes="segment" GroupName="TimeLimitUnit" Content="s" IsChecked="True" AutomationProperties.Name="Time limit in seconds" ToolTip.Tip="Seconds" />
-                                <RadioButton Classes="segment" GroupName="TimeLimitUnit" Content="m" AutomationProperties.Name="Time limit in minutes" ToolTip.Tip="Minutes" />
-                                <RadioButton Classes="segment" GroupName="TimeLimitUnit" Content="h" AutomationProperties.Name="Time limit in hours" ToolTip.Tip="Hours" />
+                                <RadioButton Classes="segment" GroupName="TimeLimitUnit" Content="s" IsChecked="{Binding Settings.TimeUnitSecond, Mode=TwoWay}" AutomationProperties.Name="Time limit in seconds" ToolTip.Tip="Seconds" />
+                                <RadioButton Classes="segment" GroupName="TimeLimitUnit" Content="m" IsChecked="{Binding Settings.TimeUnitMinute, Mode=TwoWay}" AutomationProperties.Name="Time limit in minutes" ToolTip.Tip="Minutes" />
+                                <RadioButton Classes="segment" GroupName="TimeLimitUnit" Content="h" IsChecked="{Binding Settings.TimeUnitHour, Mode=TwoWay}" AutomationProperties.Name="Time limit in hours" ToolTip.Tip="Hours" />
                             </UniformGrid>
                         </Border>
-                        <ToggleButton Grid.Column="3" IsChecked="True" AutomationProperties.Name="Time limit" />
+                        <ToggleButton Grid.Column="3" IsChecked="{Binding Settings.TimeLimitEnabled, Mode=TwoWay}" AutomationProperties.Name="Time limit" />
                     </Grid>
                 </Border>
 
@@ -132,23 +133,23 @@
                                 <TextBlock Classes="section-title" Text="Corner Stop" />
                                 <TextBlock Classes="description" Text="Stops the clicker when the cursor enters a screen corner." />
                             </StackPanel>
-                            <ToggleButton Grid.Column="1" IsChecked="True" VerticalAlignment="Top" AutomationProperties.Name="Corner stop" />
+                            <ToggleButton Grid.Column="1" IsChecked="{Binding Settings.CornerStop, Mode=TwoWay}" VerticalAlignment="Top" AutomationProperties.Name="Corner stop" />
                         </Grid>
                         <Grid ColumnDefinitions="90,*,90">
                             <StackPanel Spacing="8" VerticalAlignment="Center">
-                                <NumericUpDown Value="25" Minimum="0" AutomationProperties.Name="Top left corner size in pixels" ToolTip.Tip="Top-left corner">
+                                <NumericUpDown Name="TopLeftInput" Value="{Binding Settings.TopLeft, Mode=TwoWay}" Minimum="0" IsEnabled="{Binding Settings.CornerEditable}" AutomationProperties.Name="Top left corner size in pixels" ToolTip.Tip="Top-left corner">
                                     <NumericUpDown.InnerRightContent><TextBlock Classes="unit" Text="px" /></NumericUpDown.InnerRightContent>
                                 </NumericUpDown>
-                                <NumericUpDown Value="25" Minimum="0" AutomationProperties.Name="Bottom left corner size in pixels" ToolTip.Tip="Bottom-left corner">
+                                <NumericUpDown Name="BottomLeftInput" Value="{Binding Settings.BottomLeft, Mode=TwoWay}" Minimum="0" IsEnabled="{Binding Settings.CornerEditable}" AutomationProperties.Name="Bottom left corner size in pixels" ToolTip.Tip="Bottom-left corner">
                                     <NumericUpDown.InnerRightContent><TextBlock Classes="unit" Text="px" /></NumericUpDown.InnerRightContent>
                                 </NumericUpDown>
                             </StackPanel>
                             <svg:Svg Grid.Column="1" Path="/Assets/Icons/monitor-corners.svg" Height="72" Stretch="Uniform" IsHitTestVisible="False" />
                             <StackPanel Grid.Column="2" Spacing="8" VerticalAlignment="Center">
-                                <NumericUpDown Value="25" Minimum="0" AutomationProperties.Name="Top right corner size in pixels" ToolTip.Tip="Top-right corner">
+                                <NumericUpDown Name="TopRightInput" Value="{Binding Settings.TopRight, Mode=TwoWay}" Minimum="0" IsEnabled="{Binding Settings.CornerEditable}" AutomationProperties.Name="Top right corner size in pixels" ToolTip.Tip="Top-right corner">
                                     <NumericUpDown.InnerRightContent><TextBlock Classes="unit" Text="px" /></NumericUpDown.InnerRightContent>
                                 </NumericUpDown>
-                                <NumericUpDown Value="25" Minimum="0" AutomationProperties.Name="Bottom right corner size in pixels" ToolTip.Tip="Bottom-right corner">
+                                <NumericUpDown Name="BottomRightInput" Value="{Binding Settings.BottomRight, Mode=TwoWay}" Minimum="0" IsEnabled="{Binding Settings.CornerEditable}" AutomationProperties.Name="Bottom right corner size in pixels" ToolTip.Tip="Bottom-right corner">
                                     <NumericUpDown.InnerRightContent><TextBlock Classes="unit" Text="px" /></NumericUpDown.InnerRightContent>
                                 </NumericUpDown>
                             </StackPanel>
@@ -163,23 +164,23 @@
                                 <TextBlock Classes="section-title" Text="Edge Stop" />
                                 <TextBlock Classes="description" Text="Stops the clicker when the cursor reaches a screen edge." />
                             </StackPanel>
-                            <ToggleButton Grid.Column="1" IsChecked="True" VerticalAlignment="Top" AutomationProperties.Name="Edge stop" />
+                            <ToggleButton Grid.Column="1" IsChecked="{Binding Settings.EdgeStop, Mode=TwoWay}" VerticalAlignment="Top" AutomationProperties.Name="Edge stop" />
                         </Grid>
                         <Grid ColumnDefinitions="90,*,90">
                             <StackPanel Spacing="6" VerticalAlignment="Center">
-                                <NumericUpDown Value="40" Minimum="0" AutomationProperties.Name="Top edge stop distance in pixels" ToolTip.Tip="Top edge">
+                                <NumericUpDown Name="TopEdgeInput" Value="{Binding Settings.TopEdge, Mode=TwoWay}" Minimum="0" IsEnabled="{Binding Settings.EdgeEditable}" AutomationProperties.Name="Top edge stop distance in pixels" ToolTip.Tip="Top edge">
                                     <NumericUpDown.InnerRightContent><TextBlock Classes="unit" Text="px" /></NumericUpDown.InnerRightContent>
                                 </NumericUpDown>
-                                <NumericUpDown Value="40" Minimum="0" AutomationProperties.Name="Left edge stop distance in pixels" ToolTip.Tip="Left edge">
+                                <NumericUpDown Name="LeftEdgeInput" Value="{Binding Settings.LeftEdge, Mode=TwoWay}" Minimum="0" IsEnabled="{Binding Settings.EdgeEditable}" AutomationProperties.Name="Left edge stop distance in pixels" ToolTip.Tip="Left edge">
                                     <NumericUpDown.InnerRightContent><TextBlock Classes="unit" Text="px" /></NumericUpDown.InnerRightContent>
                                 </NumericUpDown>
                             </StackPanel>
                             <svg:Svg Grid.Column="1" Path="/Assets/Icons/monitor-edges.svg" Height="66" Stretch="Uniform" IsHitTestVisible="False" />
                             <StackPanel Grid.Column="2" Spacing="6" VerticalAlignment="Center">
-                                <NumericUpDown Value="40" Minimum="0" AutomationProperties.Name="Right edge stop distance in pixels" ToolTip.Tip="Right edge">
+                                <NumericUpDown Name="RightEdgeInput" Value="{Binding Settings.RightEdge, Mode=TwoWay}" Minimum="0" IsEnabled="{Binding Settings.EdgeEditable}" AutomationProperties.Name="Right edge stop distance in pixels" ToolTip.Tip="Right edge">
                                     <NumericUpDown.InnerRightContent><TextBlock Classes="unit" Text="px" /></NumericUpDown.InnerRightContent>
                                 </NumericUpDown>
-                                <NumericUpDown Value="40" Minimum="0" AutomationProperties.Name="Bottom edge stop distance in pixels" ToolTip.Tip="Bottom edge">
+                                <NumericUpDown Name="BottomEdgeInput" Value="{Binding Settings.BottomEdge, Mode=TwoWay}" Minimum="0" IsEnabled="{Binding Settings.EdgeEditable}" AutomationProperties.Name="Bottom edge stop distance in pixels" ToolTip.Tip="Bottom edge">
                                     <NumericUpDown.InnerRightContent><TextBlock Classes="unit" Text="px" /></NumericUpDown.InnerRightContent>
                                 </NumericUpDown>
                             </StackPanel>
@@ -194,16 +195,16 @@
                             <TextBlock Classes="description" Text="Moves the cursor to the saved point before each click while enabled." />
                         </StackPanel>
                         <StackPanel Grid.Column="1" Spacing="4">
-                            <ToggleButton IsChecked="False" HorizontalAlignment="Right" AutomationProperties.Name="Fixed cursor position" />
+                            <ToggleButton IsChecked="{Binding Settings.PositionEnabled, Mode=TwoWay}" HorizontalAlignment="Right" AutomationProperties.Name="Fixed cursor position" />
                             <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                                <NumericUpDown Classes="compact" Value="0" AutomationProperties.Name="Cursor X coordinate">
+                                <NumericUpDown Name="PositionXInput" Classes="compact" Value="{Binding Settings.PositionX, Mode=TwoWay}" IsEnabled="{Binding Settings.PositionEditable}" AutomationProperties.Name="Cursor X coordinate">
                                     <NumericUpDown.InnerLeftContent><TextBlock Classes="unit" Text="X" /></NumericUpDown.InnerLeftContent>
                                 </NumericUpDown>
-                                <NumericUpDown Grid.Column="1" Classes="compact" Value="0" AutomationProperties.Name="Cursor Y coordinate">
+                                <NumericUpDown Name="PositionYInput" Grid.Column="1" Classes="compact" Value="{Binding Settings.PositionY, Mode=TwoWay}" IsEnabled="{Binding Settings.PositionEditable}" AutomationProperties.Name="Cursor Y coordinate">
                                     <NumericUpDown.InnerLeftContent><TextBlock Classes="unit" Text="Y" /></NumericUpDown.InnerLeftContent>
                                 </NumericUpDown>
                             </Grid>
-                            <Button Classes="compact" HorizontalAlignment="Stretch" AutomationProperties.Name="Pick cursor position">
+                            <Button Classes="compact" HorizontalAlignment="Stretch" Command="{Binding PickCommand}" AutomationProperties.Name="Pick cursor position">
                                 <StackPanel Orientation="Horizontal" Spacing="8">
                                     <Path Width="13" Height="13" Stretch="Uniform" Stroke="{Binding $parent[Button].Foreground}" StrokeThickness="1.5" Data="M 8,3 A 5,5 0 1 0 8,13 A 5,5 0 1 0 8,3 M 8,0 L 8,5 M 8,11 L 8,16 M 0,8 L 5,8 M 11,8 L 16,8" />
                                     <TextBlock Text="Pick" VerticalAlignment="Center" />

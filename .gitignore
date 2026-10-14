@@ -3,17 +3,11 @@
 [Oo]bj/
 artifacts/
 publish/
+*.nupkg
+*.snupkg
 
 # Avalonia build task cache
 .avalonia-build-tasks/
-
-# Test and coverage output
-TestResults/
-coverage/
-*.coverage
-*.coveragexml
-*.nupkg
-*.snupkg
 
 # Visual Studio and Rider user settings
 .vs/
