@@ -135,6 +135,12 @@ internal sealed class LibEiInputSender : IInputPlayback
         lock (gate)
         {
             var device = RequireDevice(keyboard ? EiCapability.Keyboard : EiCapability.Button);
+            if (!pressed)
+            {
+                // A newly resumed device must not receive another device's release.
+                device = held.FirstOrDefault(item => item.Code == code && item.Keyboard == keyboard).Device;
+                if (device == 0) { return; }
+            }
             var input = (device, code, keyboard);
             if (pressed ? !held.Add(input) : !held.Remove(input)) { return; }
             SendHeld(device, code, pressed, keyboard);

@@ -27,7 +27,7 @@ internal sealed class GlobalShortcutSession : IAsyncDisposable
 
     private GlobalShortcutSession(LinuxPortalConnection portal, string session) { this.portal = portal; this.session = session; }
 
-    internal static async Task<GlobalShortcutSession> OpenAsync(LinuxPortalConnection portal, CancellationToken cancellationToken, IReadOnlyList<ShortcutDefinition>? definitions = null)
+    internal static async Task<GlobalShortcutSession> OpenAsync(LinuxPortalConnection portal, CancellationToken cancellationToken, IReadOnlyList<ShortcutDefinition> definitions)
     {
         if (await portal.VersionAsync(Interface).WaitAsync(cancellationToken) < 1) { throw new NotSupportedException("The desktop does not support the Global Shortcuts portal."); }
         var result = new GlobalShortcutSession(portal, await portal.CreateSessionAsync(Interface, cancellationToken));
@@ -61,7 +61,7 @@ internal sealed class GlobalShortcutSession : IAsyncDisposable
             {
                 writer.WriteObjectPath(result.session);
                 var array = writer.WriteArrayStart(DBusType.Struct);
-                foreach (var shortcut in definitions ?? new[] { new ShortcutDefinition("activate", "Toggle / hold clicking", "CTRL+SHIFT+F8"), new ShortcutDefinition("record-start", "Start recording", "CTRL+SHIFT+F9"), new ShortcutDefinition("record-stop", "Stop recording", "CTRL+SHIFT+F10") })
+                foreach (var shortcut in definitions)
                 {
                     writer.WriteStructureStart();
                     writer.WriteString(shortcut.Id);

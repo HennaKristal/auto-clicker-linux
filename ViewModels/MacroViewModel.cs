@@ -6,8 +6,7 @@ namespace AutoClicker.ViewModels;
 
 public sealed class MacroViewModel : ObservableObject
 {
-    private MacroDefinition definition;
-    private static readonly TimeZoneInfo DisplayTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Helsinki");
+    private readonly MacroDefinition definition;
     public MainViewModel Owner { get; }
     public Guid Id => definition.Id;
     public int EventCount => definition.Events.Count;
@@ -19,7 +18,7 @@ public sealed class MacroViewModel : ObservableObject
     public bool Infinite { get => Get(definition.Infinite); set { Put(value); Owner.MacroChanged(); } }
     public bool RepeatEditable => Owner.SettingsEditable && !Infinite;
     public string Length => (definition.Events.LastOrDefault()?.OffsetMs / 1000 ?? 0).ToString("0.0") + "s";
-    public string Created => TimeZoneInfo.ConvertTime(definition.Created, DisplayTimeZone).ToString("yyyy-MM-dd HH:mm");
+    public string Created => definition.Created.ToLocalTime().ToString("yyyy-MM-dd HH:mm");
     public string PlayTip => Owner.ActiveMacroId == Id ? "Stop macro" : "Play macro";
     public MacroViewModel(MainViewModel owner, MacroDefinition definition) { Owner = owner; this.definition = definition; }
     public MacroDefinition Build()

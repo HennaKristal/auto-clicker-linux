@@ -125,14 +125,35 @@ public sealed class WindowInteractions : IAppInteractions
 
     public Task<DesktopPoint?> PickPositionAsync(CancellationToken cancellationToken)
     {
-        var desktop = snapshot() ?? throw new InvalidOperationException("Cursor position is unavailable.");
+        if (snapshot() == null) { throw new InvalidOperationException("Cursor position is unavailable."); }
+        if (owner.Screens.All.Count == 0) { throw new InvalidOperationException("No screens are available for position picking."); }
         var result = new TaskCompletionSource<DesktopPoint?>(TaskCreationOptions.RunContinuationsAsynchronously);
         var overlays = new List<Window>();
-        foreach (var monitor in desktop.Monitors)
+        foreach (var screen in owner.Screens.All)
         {
-            var overlay = new Window { Width = monitor.Width, Height = monitor.Height, Position = new PixelPoint((int)monitor.X, (int)monitor.Y), WindowDecorations = WindowDecorations.None, Topmost = true, ShowInTaskbar = false, CanResize = false, Background = new SolidColorBrush(Color.FromArgb(24, 65, 140, 230)), TransparencyLevelHint = new[] { WindowTransparencyLevel.Transparent }, Cursor = new Cursor(StandardCursorType.Cross), Title = "Pick click position" };
-            overlay.Content = new TextBlock { Text = "Click to save this position • Escape to cancel", HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Background = new SolidColorBrush(Color.Parse("#17191d")), Padding = new Thickness(16) };
-            overlay.PointerPressed += (_, args) => { if (args.GetCurrentPoint(overlay).Properties.IsLeftButtonPressed) { var point = args.GetPosition(overlay); result.TrySetResult(new(monitor.X + point.X, monitor.Y + point.Y)); args.Handled = true; } };
+            // Window placement uses Avalonia's screen space; saved input uses KWin's logical coordinates.
+            var overlay = new Window
+            {
+                Width = screen.Bounds.Width / screen.Scaling,
+                Height = screen.Bounds.Height / screen.Scaling,
+                Position = screen.Bounds.Position,
+                WindowDecorations = WindowDecorations.None,
+                Topmost = true,
+                ShowInTaskbar = false,
+                CanResize = false,
+                Background = new SolidColorBrush(Color.FromArgb(24, 65, 140, 230)),
+                TransparencyLevelHint = new[] { WindowTransparencyLevel.Transparent },
+                Cursor = new Cursor(StandardCursorType.Cross),
+                Title = "Pick click position"
+            };
+            overlay.Content = new TextBlock { Text = "Click to save this position - Escape to cancel", HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, Background = new SolidColorBrush(Color.Parse("#17191d")), Padding = new Thickness(16) };
+            overlay.PointerPressed += (_, args) =>
+            {
+                if (!args.GetCurrentPoint(overlay).Properties.IsLeftButtonPressed) { return; }
+                if (snapshot() is { } current) { result.TrySetResult(current.Cursor); }
+                else { result.TrySetException(new InvalidOperationException("Cursor position is unavailable.")); }
+                args.Handled = true;
+            };
             overlay.KeyDown += (_, args) => { if (args.Key == Key.Escape) { result.TrySetResult(null); args.Handled = true; } };
             overlay.Closed += (_, _) => result.TrySetResult(null);
             overlays.Add(overlay);

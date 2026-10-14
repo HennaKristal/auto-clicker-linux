@@ -4,10 +4,10 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
-    <UserSecretsId>e23745fc-fefc-40bf-990c-4a257f8e7619</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Tests/**/*.cs" />
     <AvaloniaResource Include="Assets/Icons/**" />
     <None Include="Platform/Linux/KWin/cursor.js" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

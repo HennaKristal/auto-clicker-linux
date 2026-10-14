@@ -66,7 +66,7 @@ internal static class LibEvdevReader
         if (System.IO.Path.GetDirectoryName(path) != "/dev/input" || !System.IO.Path.GetFileName(path).StartsWith("event", StringComparison.Ordinal)) { return false; }
         var sysfs = new DirectoryInfo("/sys/class/input/" + System.IO.Path.GetFileName(path));
         var target = sysfs.ResolveLinkTarget(true)?.FullName;
-        return target != null && !target.StartsWith("/sys/devices/virtual/", StringComparison.Ordinal);
+        return target != null && InputDeviceDiscovery.IsHardwarePath(target);
     }
 
     internal static int Run(string[] arguments)
@@ -111,7 +111,7 @@ internal static class LibEvdevReader
                         // An overflow cannot preserve the original timings. Stop instead of saving a partial sequence.
                         if (result == SynchronizationRequired) { throw new IOException("Input events were lost (SYN_DROPPED) on " + device.Path + "; the recording was discarded."); }
                         if (result < 0) { throw new IOException("Input device disconnected or failed: " + device.Path + " (errno " + -result + ")."); }
-                        if (!IsRecordable(inputEvent.Type, inputEvent.Code)) { continue; }
+                        if (!IsRecordable(inputEvent.Type, inputEvent.Code) || inputEvent.Value == 2) { continue; }
                         Console.WriteLine(JsonSerializer.Serialize(new PhysicalInputEvent(device.Path, checked((long)inputEvent.Seconds * 1_000_000 + (long)inputEvent.Microseconds), inputEvent.Type, inputEvent.Code, inputEvent.Value)));
                         if (++count >= 20000) { throw new IOException("Recording reached its 20,000-event limit."); }
                     }

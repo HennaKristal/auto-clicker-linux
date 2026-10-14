@@ -25,6 +25,9 @@ internal sealed class LinuxDesktopBackend : IDesktopBackend
     public async Task ConnectAsync(IReadOnlyList<ShortcutDefinition> definitions, Action<string> status, CancellationToken cancellationToken)
     {
         if (!OperatingSystem.IsLinux() || LibEvdevReader.geteuid() == 0) { throw new InvalidOperationException("Run AutoClicker as your normal Linux desktop user."); }
+        if (IntPtr.Size != 8) { throw new PlatformNotSupportedException("AutoClicker requires 64-bit Linux."); }
+        var session = Environment.GetEnvironmentVariable("XDG_SESSION_TYPE");
+        if (!string.Equals(session, "wayland", StringComparison.OrdinalIgnoreCase)) { throw new NotSupportedException("AutoClicker requires a KDE Plasma Wayland session. Log into Plasma (Wayland) before enabling desktop input."); }
         if (Ready) { return; }
         await DisposeAsync();
         try

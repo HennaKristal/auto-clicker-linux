@@ -24,6 +24,7 @@ public sealed class MainViewModel : ObservableObject
     private readonly List<MacroViewModel> macros = new();
     private readonly List<AsyncCommand> allCommands = new();
     private readonly object statisticsGate = new();
+    private readonly object progressGate = new();
     private ClickerSettings lastValidSettings;
     private UsageStatistics statistics;
     private AutomationController? controller;
@@ -41,6 +42,8 @@ public sealed class MainViewModel : ObservableObject
     private long editVersion;
     private int holdPressed;
     private long lastUiUpdate;
+    private AutomationState? lastQueuedState;
+    private long lastQueuedGeneration;
     private RunProgress progress = new(AutomationState.Idle, 0, 0, PermissionWarning);
     private string sort = "";
     private bool descending;
@@ -140,7 +143,12 @@ public sealed class MainViewModel : ObservableObject
         {
             if (closing) { return; }
             await commands.WaitAsync(lifetime.Token);
-            try { ErrorText = ""; await action(parameter); }
+            try
+            {
+                if (closing || !allowed()) { return; }
+                ErrorText = "";
+                await action(parameter);
+            }
             finally { commands.Release(); Refresh(); }
         }, allowed, ReportError);
         allCommands.Add(command);
@@ -159,7 +167,7 @@ public sealed class MainViewModel : ObservableObject
     private void ReportError(Exception error) { ErrorText = error.Message; Status = backend.Ready ? "Ready" : PermissionWarning; RefreshRecordingPermissions(); Refresh(); }
     private void RefreshRecordingPermissions() { recordingPermissionsRequired = backend.Ready && !backend.HasRecordingPermissions(RecordClicks, RecordKeyboard); Raise(); }
     public string Trigger(string id) => backend.Bindings.FirstOrDefault(binding => binding.Id == id) is { IsAssigned: true } binding ? binding.TriggerDescription : "Unassigned";
-    private IReadOnlyList<ShortcutDefinition> Definitions() => new[] { new ShortcutDefinition("activate", "Toggle / hold clicking", "CTRL+SHIFT+F8"), new ShortcutDefinition("record-start", "Start recording", "CTRL+SHIFT+F9"), new ShortcutDefinition("record-stop", "Stop recording", "CTRL+SHIFT+F10") }.Concat(macros.Select(macro => new ShortcutDefinition("macro_" + macro.Id.ToString("N"), "Play / stop: " + macro.Name))).ToArray();
+    private IReadOnlyList<ShortcutDefinition> Definitions() => new[] { new ShortcutDefinition("activate", "Toggle / hold clicking", "NUM+1"), new ShortcutDefinition("record-start", "Start recording", "NUM+2"), new ShortcutDefinition("record-stop", "Stop recording", "NUM+3") }.Concat(macros.Select(macro => new ShortcutDefinition("macro_" + macro.Id.ToString("N"), "Play / stop: " + macro.Name))).ToArray();
 
     private async Task ConnectAsync()
     {
@@ -206,7 +214,6 @@ public sealed class MainViewModel : ObservableObject
         await StopActivityAsync();
         if (!RecordClicks && !RecordKeyboard) { throw new ArgumentException("Enable mouse clicks or keyboard input before recording."); }
         if (recordingPermissionsRequired) { await AllowRecordingAsync(); return; }
-        if (backend.Bindings.Any(binding => binding.IsAssigned && ShortcutChord.Parse(binding.TriggerDescription).Count == 0)) { throw new ArgumentException("Choose control shortcuts using modifiers, letters, digits, function keys, or navigation keys in KDE before recording."); }
         var recordClicks = RecordClicks;
         var recordKeyboard = RecordKeyboard;
         await controller!.StartAsync(AutomationState.Recording, async token =>
@@ -216,9 +223,9 @@ public sealed class MainViewModel : ObservableObject
             var capture = await backend.StartCaptureAsync(recordClicks, recordKeyboard, token);
             var recording = new MacroRecording(capture.StartedMicroseconds, recordClicks, recordKeyboard);
             activeRecording = recording;
-            capture.Input += input => { var desktop = backend.Snapshot; recording.Add(input, desktop?.Cursor, desktop?.ActiveWindow?.ProcessId == Environment.ProcessId); controller.Report(recording.Count, clock.NowMs - started); };
             try
             {
+                capture.Input += input => { var desktop = backend.Snapshot; recording.Add(input, desktop?.Cursor, desktop?.ActiveWindow?.ProcessId == Environment.ProcessId); controller.Report(recording.Count, clock.NowMs - started); };
                 try { await capture.Completion.WaitAsync(token); }
                 catch (OperationCanceledException) when (token.IsCancellationRequested) { }
                 await capture.DisposeAsync();
@@ -381,7 +388,7 @@ public sealed class MainViewModel : ObservableObject
 
     private void OnShortcut(ShortcutEvent input)
     {
-        if (input.Pressed) { activeRecording?.SuppressControl(Trigger(input.Id)); }
+        if (input.Pressed) { activeRecording?.SuppressControl(Trigger(input.Id), new MonotonicClock().NowMs); }
         if (input.Id == "activate")
         {
             Volatile.Write(ref holdPressed, input.Pressed ? 1 : 0);
@@ -416,10 +423,15 @@ public sealed class MainViewModel : ObservableObject
 
     private void OnProgress(RunProgress update)
     {
-        // High-rate input never floods the dispatcher; state changes are always delivered.
+        // Compare queued states, since the UI may not have displayed the preceding update yet.
         var now = Environment.TickCount64;
-        if (update.State == progress.State && update.Error == null && now - Interlocked.Read(ref lastUiUpdate) < 75) { return; }
-        Interlocked.Exchange(ref lastUiUpdate, now);
+        lock (progressGate)
+        {
+            if (update.State == lastQueuedState && update.Generation == lastQueuedGeneration && update.Error == null && now - lastUiUpdate < 75) { return; }
+            lastQueuedState = update.State;
+            lastQueuedGeneration = update.Generation;
+            lastUiUpdate = now;
+        }
         Ui(() =>
         {
             if (controller == null || controller.Progress.Generation != update.Generation || ReferenceEquals(progress, update)) { return; }
@@ -488,6 +500,7 @@ public sealed class MainViewModel : ObservableObject
         dirty = true;
         Interlocked.Increment(ref editVersion);
         pendingSave?.Cancel();
+        pendingSave?.Dispose();
         pendingSave = new();
         saveTask = SaveLaterAsync(pendingSave.Token);
     }

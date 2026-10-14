@@ -11,6 +11,14 @@ internal static class Program
     {
         // Macro recording launches this process as its physical input reader.
         if (args.Length > 0 && args[0] == "--input-reader") { return LibEvdevReader.Run(args); }
+        if (args.Length == 1 && args[0] == "--list-input-devices")
+        {
+            foreach (var device in InputDeviceDiscovery.Discover())
+            {
+                Console.WriteLine(device.Path + " | " + device.Name + " | mouse=" + device.Mouse + " keyboard=" + device.Keyboard);
+            }
+            return 0;
+        }
         return BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
 

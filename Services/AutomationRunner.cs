@@ -42,7 +42,7 @@ public sealed class AutomationRunner
                 if (reason != null) { return false; }
                 var remaining = until - clock.NowMs;
                 if (remaining <= 0) { return true; }
-                await clock.DelayAsync(Math.Min(20, Math.Min(remaining, deadline - clock.NowMs)), cancellationToken);
+                await clock.DelayAsync(Math.Max(0, Math.Min(20, Math.Min(remaining, deadline - clock.NowMs))), cancellationToken);
             }
         }
         try
@@ -98,6 +98,7 @@ public sealed class AutomationRunner
                     cancellationToken.ThrowIfCancellationRequested();
                     // Preserve gaps even after a slow dispatch instead of bursting overdue events.
                     await clock.DelayAsync(item.OffsetMs - previousOffset, cancellationToken);
+                    cancellationToken.ThrowIfCancellationRequested();
                     previousOffset = item.OffsetMs;
                     if (item.Position != null && item.Pressed && !item.Keyboard) { input.MoveTo(item.Position); }
                     if (item.Keyboard) { input.SetKey(item.Code, item.Pressed); } else { input.SetButton(item.Code, item.Pressed); if (!item.Pressed) { clicks++; } }

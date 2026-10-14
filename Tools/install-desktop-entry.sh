@@ -11,6 +11,8 @@ from pathlib import Path
 project = Path(sys.argv[1])
 application_id = "org.hennakristal.AutoClicker"
 data_directory = Path(os.environ.get("XDG_DATA_HOME") or Path.home() / ".local/share")
+if not data_directory.is_absolute():
+    data_directory = Path.home() / ".local/share"
 entry = data_directory / "applications" / (application_id + ".desktop")
 if entry.exists() and "X-AutoClicker-Development=true" not in entry.read_text():
     raise SystemExit("Refusing to replace a desktop entry that was not created by this installer: " + str(entry))

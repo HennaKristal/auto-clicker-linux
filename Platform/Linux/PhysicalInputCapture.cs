@@ -20,10 +20,16 @@ internal sealed class PhysicalInputCapture : IPhysicalCapture
     private readonly Process process;
     private readonly Task<string> errors;
     private readonly TaskCompletionSource ready = new(TaskCreationOptions.RunContinuationsAsynchronously);
+    private readonly TaskCompletionSource subscribed = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private readonly CancellationTokenRegistration cancellation;
     private int disposed;
     public long StartedMicroseconds { get; }
-    public event Action<PhysicalInputEvent>? Input;
+    private Action<PhysicalInputEvent>? inputReceived;
+    public event Action<PhysicalInputEvent>? Input
+    {
+        add { inputReceived += value; subscribed.TrySetResult(); }
+        remove { inputReceived -= value; }
+    }
     public Task Completion { get; }
 
     private PhysicalInputCapture(Process process, long started, CancellationToken cancellationToken)
@@ -37,20 +43,7 @@ internal sealed class PhysicalInputCapture : IPhysicalCapture
 
     private static string[] GetDevicePaths(bool clicks, bool keyboard)
     {
-        // Read only the configured physical mouse and keyboard devices.
-        var devices = new[]
-        {
-            (Path: "/dev/input/event3", Enabled: clicks, Name: "USB OPTICAL MOUSE"),
-            (Path: "/dev/input/event5", Enabled: keyboard, Name: "Logitech USB Receiver"),
-            (Path: "/dev/input/event6", Enabled: clicks, Name: "Logitech USB Receiver Mouse")
-        }.Where(device => device.Enabled).ToArray();
-        foreach (var device in devices)
-        {
-            var path = device.Path;
-            if (!LibEvdevReader.IsPhysicalDevice(path)) { throw new IOException("Recording device is unavailable: " + path + ". Check that the selected mouse or keyboard is connected."); }
-            if (File.ReadAllText("/sys/class/input/" + Path.GetFileName(path) + "/device/name").Trim() != device.Name) { throw new IOException("The device at " + path + " has changed. Update the recording device paths before trying again."); }
-        }
-        return devices.Select(device => device.Path).ToArray();
+        return InputDeviceDiscovery.SelectPaths(InputDeviceDiscovery.Discover(), clicks, keyboard);
     }
 
     private static bool CanReadDevice(string path)
@@ -65,20 +58,32 @@ internal sealed class PhysicalInputCapture : IPhysicalCapture
 
     internal static bool HasReadAccess(bool clicks, bool keyboard)
     {
+        if (!clicks && !keyboard) { return false; }
         try { return GetDevicePaths(clicks, keyboard).All(CanReadDevice); }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException) { return false; }
     }
 
     private static ProcessStartInfo CreatePermissionCommand(uint userId, string[] paths)
     {
-        var command = new ProcessStartInfo("/usr/bin/pkexec") { RedirectStandardError = true, UseShellExecute = false };
+        var command = new ProcessStartInfo(FindExecutable("pkexec")) { RedirectStandardError = true, UseShellExecute = false };
         command.ArgumentList.Add("--disable-internal-agent");
-        command.ArgumentList.Add("/usr/bin/setfacl");
+        command.ArgumentList.Add(FindExecutable("setfacl"));
         command.ArgumentList.Add("-m");
         command.ArgumentList.Add("u:" + userId.ToString(CultureInfo.InvariantCulture) + ":r");
         command.ArgumentList.Add("--");
         foreach (var path in paths) { command.ArgumentList.Add(path); }
         return command;
+    }
+
+    private static string FindExecutable(string name)
+    {
+        foreach (var directory in (Environment.GetEnvironmentVariable("PATH") ?? "").Split(Path.PathSeparator))
+        {
+            if (!Path.IsPathFullyQualified(directory)) { continue; }
+            var path = Path.Combine(directory, name);
+            if (File.Exists(path)) { return path; }
+        }
+        throw new InvalidOperationException("Allowing recording requires " + name + " to be installed and available on PATH.");
     }
 
     internal static async Task GrantReadAccessAsync(bool clicks, bool keyboard, CancellationToken cancellationToken)
@@ -90,7 +95,6 @@ internal sealed class PhysicalInputCapture : IPhysicalCapture
         if (userId == 0) { throw new InvalidOperationException("Allow recording as your normal desktop user."); }
         paths = paths.Where(path => !CanReadDevice(path)).ToArray();
         if (paths.Length == 0) { return; }
-        if (!File.Exists("/usr/bin/pkexec") || !File.Exists("/usr/bin/setfacl")) { throw new InvalidOperationException("Allowing recording requires pkexec and setfacl to be installed."); }
 
         // Let the desktop prompt authorize only the device permission command.
         using var permissionProcess = Process.Start(CreatePermissionCommand(userId, paths)) ?? throw new IOException("Could not open the recording authorization prompt.");
@@ -140,8 +144,10 @@ internal sealed class PhysicalInputCapture : IPhysicalCapture
         {
             while (await process.StandardOutput.ReadLineAsync() is { } line)
             {
+                // Do not drop input between the reader becoming ready and the recorder subscribing.
+                await subscribed.Task;
                 var input = JsonSerializer.Deserialize<PhysicalInputEvent>(line) ?? throw new IOException("Invalid recording event.");
-                Input?.Invoke(input);
+                inputReceived?.Invoke(input);
             }
             await process.WaitForExitAsync();
             var error = await errors;
@@ -154,6 +160,7 @@ internal sealed class PhysicalInputCapture : IPhysicalCapture
     public async ValueTask DisposeAsync()
     {
         if (Interlocked.Exchange(ref disposed, 1) != 0) { return; }
+        subscribed.TrySetResult();
         cancellation.Dispose();
         try
         {
