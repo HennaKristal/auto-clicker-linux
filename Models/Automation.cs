@@ -11,6 +11,7 @@ public enum ClickButton { Left, Middle, Right }
 
 public sealed record ClickerSettings
 {
+    public const int MaximumRate = 100_000;
     public double Rate { get; init; } = 100;
     public RateUnit RateUnit { get; init; }
     public ActivationMode Activation { get; init; }
@@ -42,10 +43,13 @@ public sealed record ClickerSettings
     public double DurationMs => TimeLimit * (TimeUnit switch { DurationUnit.Minute => 60_000, DurationUnit.Hour => 3_600_000, _ => 1000 });
     public uint ButtonCode => Button switch { ClickButton.Middle => 0x112, ClickButton.Right => 0x111, _ => 0x110 };
 
+    // Preserve short default presses at normal rates and reserve release time at high rates.
+    public double HoldDurationMs(double intervalMs) => DutyEnabled ? intervalMs * DutyPercent / 100 : Math.Min(1, intervalMs / 2);
+
     public void Validate()
     {
         if (!Enum.IsDefined(RateUnit) || !Enum.IsDefined(Activation) || !Enum.IsDefined(Button) || !Enum.IsDefined(TimeUnit)) { throw new ArgumentException("Choose valid units, activation mode, and mouse button."); }
-        Check(Rate, 1, 1000, "Click rate");
+        Check(Rate, 1, MaximumRate, "Click rate");
         Check(DoubleDelayMs, 0, 60_000, "Double-click delay");
         Check(DutyPercent, 0, 100, "Duty cycle");
         Check(VariationPercent, 0, 100, "Speed variation");

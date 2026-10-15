@@ -8,6 +8,7 @@ public sealed class ClickerSettingsViewModel : ObservableObject
 {
     // Keep model, UI, and incomplete disabled fields on the same default values.
     private static readonly ClickerSettings Defaults = new();
+    public decimal MaximumRate => ClickerSettings.MaximumRate;
     public decimal? Rate { get => Get<decimal?>((decimal)Defaults.Rate); set => Put(value); }
     public decimal? DoubleDelayMs { get => Get<decimal?>((decimal)Defaults.DoubleDelayMs); set => Put(value); }
     public decimal? DutyPercent { get => Get<decimal?>((decimal)Defaults.DutyPercent); set => Put(value); }

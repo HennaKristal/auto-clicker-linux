@@ -20,7 +20,7 @@
                         </StackPanel>
 
                         <Grid ColumnDefinitions="94,Auto,*" ColumnSpacing="14" Margin="0,3,0,0">
-                            <NumericUpDown Name="RateInput" Value="{Binding Settings.Rate, Mode=TwoWay}" Minimum="1" Maximum="1000" Height="37" AutomationProperties.Name="Click rate" />
+                            <NumericUpDown Name="RateInput" Value="{Binding Settings.Rate, Mode=TwoWay}" Minimum="1" Maximum="{Binding Settings.MaximumRate}" Height="37" AutomationProperties.Name="Click rate" />
                             <TextBlock Grid.Column="1" Classes="label" Text="Clicks Per" />
                             <Border Grid.Column="2" Classes="segments" Height="37">
                                 <UniformGrid Columns="4">

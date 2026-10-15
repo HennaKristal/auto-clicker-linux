@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-project_directory=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
-releases_directory="$project_directory/Releases"
+releases_directory=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+project_directory=$(cd -- "$releases_directory/.." && pwd)
 application_id="org.hennakristal.AutoClicker"
 packaging_tool_version="1.9.1"
 packaging_tool_checksum="ed4ce84f0d9caff66f50bcca6ff6f35aae54ce8135408b3fa33abfc3cb384eb0"
@@ -26,7 +26,8 @@ trap 'rm -rf -- "$build_directory"' EXIT
 application_directory="$build_directory/AutoClicker.AppDir"
 publish_directory="$application_directory/usr/lib/AutoClicker"
 packaging_tool="$build_directory/appimagetool.AppImage"
-output_file="$releases_directory/AutoClicker-x86_64.AppImage"
+output_filename="AutoClicker-x86_64.AppImage"
+output_file="$releases_directory/$output_filename"
 mkdir -p "$publish_directory"
 
 # Include .NET and the application's native publish libraries.
@@ -81,7 +82,11 @@ chmod +x "$packaging_tool"
 
 # Extraction lets the packaging tool run without a FUSE installation.
 ARCH=x86_64 "$packaging_tool" --appimage-extract-and-run \
-    "$application_directory" "$build_directory/AutoClicker-x86_64.AppImage"
-chmod +x "$build_directory/AutoClicker-x86_64.AppImage"
-mv -f -- "$build_directory/AutoClicker-x86_64.AppImage" "$output_file"
+    "$application_directory" "$build_directory/$output_filename"
+chmod +x "$build_directory/$output_filename"
+mv -f -- "$build_directory/$output_filename" "$output_file"
+(
+    cd -- "$releases_directory"
+    sha256sum "$output_filename" > "$output_filename.sha256"
+)
 printf '\nAppImage created: %s\n' "$output_file"

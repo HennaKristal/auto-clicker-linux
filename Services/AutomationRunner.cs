@@ -1,28 +1,44 @@
 using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoClicker.Models;
 
 namespace AutoClicker.Services;
 
-public sealed class MonotonicClock : IAutomationClock
+public sealed class AutomationRunner : IDisposable
 {
-    public double NowMs => Stopwatch.GetElapsedTime(0, Stopwatch.GetTimestamp()).TotalMilliseconds;
-    public Task DelayAsync(double milliseconds, CancellationToken cancellationToken) => Task.Delay(TimeSpan.FromMilliseconds(milliseconds), cancellationToken);
-}
+    private sealed class ProgressReporter
+    {
+        private readonly Action<long, double> callback;
+        private double nextUpdateMs;
+        public ProgressReporter(Action<long, double> callback) { this.callback = callback; }
+        public void Report(long clicks, double elapsedMs, bool force = false)
+        {
+            if (!force && elapsedMs < nextUpdateMs) { return; }
+            nextUpdateMs = elapsedMs + 75;
+            callback(clicks, elapsedMs);
+        }
+    }
 
-public sealed class AutomationRunner
-{
     private readonly IAutomationClock clock;
     private readonly Func<double> random;
-    public AutomationRunner(IAutomationClock? clock = null, Func<double>? random = null) { this.clock = clock ?? new MonotonicClock(); this.random = random ?? Random.Shared.NextDouble; }
+    private readonly bool ownsClock;
+    public AutomationRunner(IAutomationClock? clock = null, Func<double>? random = null)
+    {
+        this.clock = clock ?? new MonotonicClock();
+        ownsClock = clock == null;
+        this.random = random ?? Random.Shared.NextDouble;
+    }
+
+    public void Dispose() { if (ownsClock) { ((MonotonicClock)clock).Dispose(); } }
 
     public async Task<RunResult> ClickAsync(ClickerSettings settings, IInputPlayback input, Func<DesktopSnapshot?> snapshot, Action<long, double> progress, CancellationToken cancellationToken)
     {
         settings.Validate();
         var started = clock.NowMs;
         var deadline = settings.TimeLimitEnabled ? started + settings.DurationMs : double.PositiveInfinity;
+        var reporter = new ProgressReporter(progress);
+        var nextCycleStart = started;
         long completed = 0;
         var buttonHeld = false;
         string? reason = null;
@@ -51,8 +67,9 @@ public sealed class AutomationRunner
             {
                 var cycleStart = clock.NowMs;
                 var variation = settings.VariationEnabled ? settings.VariationPercent / 100 : 0;
-                var interval = Math.Max(1, settings.IntervalMs * (1 + (Math.Clamp(random(), 0, 1) * 2 - 1) * variation));
-                var hold = Math.Max(1, settings.DutyEnabled ? interval * settings.DutyPercent / 100 : 1);
+                var interval = Math.Max(1000d / ClickerSettings.MaximumRate, settings.IntervalMs * (1 + (variation > 0 ? (Math.Clamp(random(), 0, 1) * 2 - 1) * variation : 0)));
+                var hold = settings.HoldDurationMs(interval);
+                if (cycleStart - nextCycleStart >= interval) { nextCycleStart = cycleStart; }
                 for (var click = 0; click < (settings.DoubleClick ? 2 : 1); click++)
                 {
                     reason = Stop();
@@ -70,16 +87,17 @@ public sealed class AutomationRunner
                     input.SetButton(settings.ButtonCode, false);
                     buttonHeld = false;
                     completed++;
-                    progress(completed, clock.NowMs - started);
-                    if (click == 0 && settings.DoubleClick && !await Wait(clock.NowMs + Math.Max(1, settings.DoubleDelayMs))) { break; }
+                    reporter.Report(completed, clock.NowMs - started);
+                    if (click == 0 && settings.DoubleClick && !await Wait(clock.NowMs + settings.DoubleDelayMs)) { break; }
                 }
                 if (reason != null) { break; }
-                // Schedule from this cycle, never accumulate overdue cycles into a catch-up burst.
-                if (!await Wait(Math.Max(cycleStart + interval, clock.NowMs + 1))) { break; }
+                // Absorb small wake-up delays, and reset after overruns instead of accumulating overdue cycles.
+                nextCycleStart = Math.Max(nextCycleStart + interval, clock.NowMs);
+                if (!await Wait(nextCycleStart)) { break; }
             }
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { reason = "Stopped"; }
-        finally { input.ReleaseAll(); if (buttonHeld) { completed++; progress(completed, clock.NowMs - started); } }
+        finally { input.ReleaseAll(); if (buttonHeld) { completed++; } reporter.Report(completed, clock.NowMs - started, force: true); }
         return new(completed, clock.NowMs - started, reason ?? "Stopped");
     }
 
@@ -87,6 +105,7 @@ public sealed class AutomationRunner
     {
         MacroValidation.Validate(macro);
         var started = clock.NowMs;
+        var reporter = new ProgressReporter(progress);
         long clicks = 0;
         try
         {
@@ -102,7 +121,7 @@ public sealed class AutomationRunner
                     previousOffset = item.OffsetMs;
                     if (item.Position != null && item.Pressed && !item.Keyboard) { input.MoveTo(item.Position); }
                     if (item.Keyboard) { input.SetKey(item.Code, item.Pressed); } else { input.SetButton(item.Code, item.Pressed); if (!item.Pressed) { clicks++; } }
-                    progress(clicks, clock.NowMs - started);
+                    reporter.Report(clicks, clock.NowMs - started);
                 }
                 input.ReleaseAll();
                 await clock.DelayAsync(1, cancellationToken); // Bound empty-delay repetitions and keep cancellation responsive.
@@ -110,6 +129,6 @@ public sealed class AutomationRunner
             return new(clicks, clock.NowMs - started, "Macro finished");
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { return new(clicks, clock.NowMs - started, "Stopped"); }
-        finally { input.ReleaseAll(); }
+        finally { input.ReleaseAll(); reporter.Report(clicks, clock.NowMs - started, force: true); }
     }
 }

@@ -3,7 +3,8 @@
 [Oo]bj/
 artifacts/
 publish/
-Releases/
+/Releases/*
+!/Releases/build-appimage.sh
 *.nupkg
 *.snupkg
 

@@ -107,7 +107,14 @@ internal sealed class LibEiInputSender : IInputPlayback
         if (FindDevice(EiCapability.Keyboard) != 0 && FindDevice(EiCapability.Button) != 0) { ready.TrySetResult(); }
     }
 
-    private nint FindDevice(EiCapability capability) => devices.FirstOrDefault(item => item.Value.Resumed && ei_device_has_capability(item.Key, capability)).Key;
+    private nint FindDevice(EiCapability capability)
+    {
+        foreach (var item in devices)
+        {
+            if (item.Value.Resumed && ei_device_has_capability(item.Key, capability)) { return item.Key; }
+        }
+        return 0;
+    }
 
     private nint RequireDevice(EiCapability capability)
     {
@@ -138,7 +145,11 @@ internal sealed class LibEiInputSender : IInputPlayback
             if (!pressed)
             {
                 // A newly resumed device must not receive another device's release.
-                device = held.FirstOrDefault(item => item.Code == code && item.Keyboard == keyboard).Device;
+                device = 0;
+                foreach (var item in held)
+                {
+                    if (item.Code == code && item.Keyboard == keyboard) { device = item.Device; break; }
+                }
                 if (device == 0) { return; }
             }
             var input = (device, code, keyboard);

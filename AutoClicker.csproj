@@ -2,13 +2,20 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
+    <Version>1.1.0</Version>
+    <Product>AutoClicker</Product>
+    <Description>Auto clicker and macro recorder for KDE Plasma on Wayland.</Description>
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <DefaultItemExcludes>$(DefaultItemExcludes);Releases/**</DefaultItemExcludes>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+
   <ItemGroup>
-    <Compile Remove="Tests/**/*.cs" />
     <AvaloniaResource Include="Assets/Icons/**" />
     <None Include="Platform/Linux/KWin/cursor.js" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>

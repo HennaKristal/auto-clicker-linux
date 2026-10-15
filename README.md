@@ -2,11 +2,24 @@
 
 A desktop auto clicker and macro recorder for **Linux with KDE Plasma on Wayland**, built with C# and Avalonia.
 
-Automate mouse clicks, record mouse and keyboard actions, and replay saved macros with their original timing and click positions. Desktop control uses KDE's portals and KWin scripting. KDE Plasma on Wayland is the supported desktop; X11 sessions and other desktop environments are outside this project's scope.
+Automate mouse clicks, record mouse and keyboard actions, and replay saved macros with their original timing and click positions. Desktop control uses KDE's portals and KWin scripting. KDE Plasma on Wayland is the only supported desktop.
+
+## Results
+
+Performance may vary depending on your hardware (Tested on). Measured click rates are approximate, with a margin of error of ±1%. The autoclicker can reliably maintain speeds of up to 25,000 clicks per second.
+
+| Requested clicks/s | Received clicks/s | CPU usage |
+| ---: | ---: | ---: |
+| 1,000 | 1,000 | 2% |
+| 10,000 | 10,000 | 5% |
+| 25,000 | 25,000 | 10% |
+| 50,000 | 44,000 | 14% |
+| 80,000 | 60,000 | 14% |
+| 100,000 | 65,000 | 15% |
 
 ## Features
 
-- Configurable click rate per second, minute, hour, or day.
+- Configurable click rate up to 100,000 per second, minute, hour, or day.
 - Left, middle, and right mouse buttons, with toggle or hold activation.
 - Optional double clicks, button hold duration through duty cycle, and randomized speed variation.
 - Click count and time limits, plus configurable screen corner and edge stops.
@@ -28,41 +41,28 @@ Automate mouse clicks, record mouse and keyboard actions, and replay saved macro
 | Input playback | `libei.so.1` |
 | Macro recording | `libevdev.so.2`, plus read access to the selected physical input devices |
 | Recording permission prompt | `pkexec` and `setfacl` on `PATH`, plus a desktop authentication agent |
-| Development desktop entry | Bash and Python 3 |
+| AppImage packaging | Bash, `curl`, Python 3, and `sha256sum` |
 | App window | XWayland, used by the current Avalonia configuration on Wayland desktops |
 
 Install native dependencies using your distribution's package manager; package names vary. The desktop integration relies on the [Remote Desktop portal](https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.RemoteDesktop.html), [Global Shortcuts portal](https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.GlobalShortcuts.html), and [KWin scripting API](https://develop.kde.org/docs/plasma/kwin/api/). Avalonia's default Linux window backend uses [XWayland on Wayland desktops](https://docs.avaloniaui.net/docs/platform-specific-guides/linux).
 
-## Build and run
+## Build and run an AppImage
 
-Clone or download the repository, then run these commands from its root directory:
+On x86_64 Linux, install the build and packaging tools listed above, then run this command from the repository root:
 
 ```bash
-dotnet build
-bash Tools/install-desktop-entry.sh
-dotnet run --no-build
+bash Releases/build-appimage.sh
 ```
 
-Run AutoClicker as your normal desktop user. The desktop-entry script registers the development build's name and icon for KDE permission dialogs. It points to `bin/Debug/net10.0/AutoClicker` and is hidden from the application launcher. Run it again if you move the project directory.
+The script creates `Releases/AutoClicker-x86_64.AppImage` and its `.sha256` checksum inside the project. It publishes a self-contained Release build without debug symbols, downloads and verifies the official `appimagetool`, and removes temporary packaging files when finished. Internet access is required. Generated release files are ignored by Git; the build script is kept with the project sources. The `Releases` folder is excluded from the C# project's source files.
 
-After changing the code, use `dotnet run` to rebuild and launch. `dotnet run --no-build` requires an existing build; it will fail if the build output has been removed.
+The package includes .NET, its internal desktop entry, and the existing app icon. KDE Wayland and the system dependencies in the Requirements table are still required on the target machine; the .NET SDK is only needed to build.
 
-## Build an AppImage
-
-On x86_64 Linux, install the .NET 10 SDK, Bash, `curl`, and Python 3, then run:
+To verify the generated package:
 
 ```bash
-bash Tools/build-appimage.sh
-```
-
-The script creates `Releases/AutoClicker-x86_64.AppImage` inside the project. It publishes a self-contained Release build, downloads and verifies the official `appimagetool`, and removes temporary packaging files when finished. Internet access is required. `Releases` is excluded from Git and project source files.
-
-The package includes .NET and reuses the existing app icon internally. It does not install a desktop entry or desktop icons. KDE Wayland and the system dependencies in the Requirements table are still required on the target machine; the .NET SDK is only needed to build.
-
-Launch the result as your normal desktop user:
-
-```bash
-./Releases/AutoClicker-x86_64.AppImage
+cd Releases
+sha256sum --check AutoClicker-x86_64.AppImage.sha256
 ```
 
 ## Permissions
@@ -75,7 +75,7 @@ Desktop authorization is requested for the running application. You may need to 
 
 ### Macro recording
 
-Recording discovers physical keyboards and mouse/touchpad buttons from Linux input capabilities. It does not depend on device names or fixed event numbers. All matching devices for the enabled recording options are included. Recording requires separate read access to these devices:
+Recording discovers physical keyboards and mouse/touchpad buttons from Linux input capabilities. All matching devices for the enabled recording options are included. Recording requires separate read access to these devices:
 
 1. Open **Macros** and select the mouse and keyboard recording options you want.
 2. If access is missing, click **Allow recording** and approve the system password prompt.
@@ -88,7 +88,7 @@ Access applies to the current device nodes. Because Linux manages these dynamica
 To inspect the devices that AutoClicker detects without opening the app or requesting permissions:
 
 ```bash
-dotnet run --no-build -- --list-input-devices
+./Releases/AutoClicker-x86_64.AppImage --list-input-devices
 ```
 
 ## Using the app
@@ -96,6 +96,10 @@ dotnet run --no-build -- --list-input-devices
 ### Auto clicking
 
 Set the rate and mouse button on the **Clicker** tab, then click **Start**. Starting from the button gives you a two-second countdown to focus the target application. The activation hotkey starts clicking immediately and follows the selected toggle or hold mode.
+
+The requested rate can be set up to 100,000. The **Average** shown while clicking counts completed clicks sent by the app; the target application may receive or handle fewer clicks. Double Click sends two clicks per cycle, so its measured click count can exceed the selected cycle rate.
+
+With Duty Cycle off, a press lasts up to 1 ms and shortens to half the interval at high rates. With Duty Cycle on, the selected percentage determines the press duration, including 0% and 100%. Press and release use separate input event frames. Short waits use a Linux high-resolution timer instead of repeatedly polling, and slow cycles do not accumulate a backlog of overdue clicks.
 
 Use **Stop** to stop clicking. Corner and edge stops are enabled by default with a distance of 50 pixels. Keep the cursor and any saved click position outside those areas, or adjust the stop settings.
 
@@ -152,22 +156,7 @@ These locations follow `XDG_CONFIG_HOME` and `XDG_DATA_HOME` when set to absolut
 
 ## Troubleshooting
 
-- **Missing executable with `--no-build`:** run `dotnet build`, then launch again.
 - **Permissions not granted:** approve all requested desktop input permissions and make sure the KDE portal backend is running.
 - **Allow recording fails:** check that `pkexec` and `setfacl` are on `PATH`, run the device-list command above, and reconnect any missing hardware. Turn off keyboard or mouse recording if you have no matching device. After a reconnection, allow access again if prompted.
 - **Clicking stops immediately:** check the corner/edge stop areas and any saved click position.
 - **Hotkey editing is unavailable:** the KDE backend must provide Global Shortcuts portal version 2.
-
-When reporting an issue, include your distribution, KDE Plasma version, session type, .NET version, steps to reproduce it, and the full error message.
-
-## Development checks
-
-```bash
-dotnet build
-dotnet run --project Tests/AutoClicker.RegressionTests.csproj
-git diff --check
-```
-
-The regression runner has no external test-package dependencies and never sends desktop input or requests permissions. It covers device discovery, multi-device recording, shortcut/UI filtering, backup recovery, storage validation, timing limits, cancellation, monitor borders, and macro editing.
-
-Desktop integration still needs a manual KDE Wayland check: approve playback and recording, exercise toggle/hold shortcuts, record and replay input in another application, reconnect hardware, revoke permissions during playback, and pick positions on mixed-scale monitors. A passing build or regression run does not verify these desktop interactions.

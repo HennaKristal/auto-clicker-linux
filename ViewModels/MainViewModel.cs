@@ -76,7 +76,7 @@ public sealed class MainViewModel : ObservableObject
     public string ActivationHotkey => Trigger("activate");
     public string RecordStartHotkey => Trigger("record-start");
     public string RecordStopHotkey => Trigger("record-stop");
-    public string Version => "v" + (Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.0.1");
+    public string Version => "v" + (Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.1.0");
     public string TotalClicks { get { lock (statisticsGate) { return (statistics.Clicks + (progress.State is AutomationState.Clicking or AutomationState.Starting ? progress.Clicks : 0)).ToString("N0"); } } }
     public string TotalTime { get { lock (statisticsGate) { return TimeSpan.FromMilliseconds(statistics.RunningMs).ToString(@"d\d\ hh\h\ mm\m\ ss\s"); } } }
     public string Sessions { get { lock (statisticsGate) { return statistics.Sessions.ToString("N0"); } } }
@@ -87,9 +87,10 @@ public sealed class MainViewModel : ObservableObject
             try
             {
                 var settings = Settings.Build();
-                var hold = Math.Max(1, settings.DutyEnabled ? settings.IntervalMs * settings.DutyPercent / 100 : 1);
-                var gesture = hold * (settings.DoubleClick ? 2 : 1) + (settings.DoubleClick ? Math.Max(1, settings.DoubleDelayMs) : 0) + 1;
-                return gesture > settings.IntervalMs ? "Gesture duration limits speed to about " + (1000 / gesture).ToString("0.##") + " cycles/s." : "Requested cycle interval: " + settings.IntervalMs.ToString("0.##") + " ms.";
+                var hold = settings.HoldDurationMs(settings.IntervalMs);
+                var gesture = hold * (settings.DoubleClick ? 2 : 1) + (settings.DoubleClick ? settings.DoubleDelayMs : 0);
+                var feedback = gesture > settings.IntervalMs ? "Gesture duration limits speed to about " + (1000 / gesture).ToString("0.##") + " cycles/s." : "Requested cycle interval: " + settings.IntervalMs.ToString("0.##") + " ms.";
+                return progress.State == AutomationState.Clicking && progress.ElapsedMs > 0 ? "Average: " + (progress.Clicks * 1000d / progress.ElapsedMs).ToString("N0") + " clicks/s. " + feedback : feedback;
             }
             catch (ArgumentException error) { return error.Message; }
         }
@@ -547,6 +548,6 @@ public sealed class MainViewModel : ObservableObject
             try { if (dirty) { await SaveNowAsync(); } }
             catch (Exception error) { StorageMessage = "Could not save: " + error.Message; }
         }
-        finally { try { await backend.DisposeAsync(); } finally { commands.Release(); } }
+        finally { try { runner.Dispose(); await backend.DisposeAsync(); } finally { commands.Release(); } }
     }
 }
