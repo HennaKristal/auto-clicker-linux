@@ -4,6 +4,8 @@ A desktop auto clicker and macro recorder for **Linux with KDE Plasma on Wayland
 
 Automate mouse clicks, record mouse and keyboard actions, and replay saved macros with their original timing and click positions. Desktop control uses KDE's portals and KWin scripting. KDE Plasma on Wayland is the only supported desktop.
 
+<img width="1927" height="688" alt="AutoClickerImage" src="https://github.com/user-attachments/assets/332ee365-7acb-4fee-9b5d-ac3cd0815a5c" />
+
 ## Results
 
 Performance may vary depending on your hardware (Tested on). Measured click rates are approximate, with a margin of error of ±1%. The autoclicker can reliably maintain speeds of up to 25,000 clicks per second.
@@ -16,6 +18,8 @@ Performance may vary depending on your hardware (Tested on). Measured click rate
 | 50,000 | 44,000 | 14% |
 | 80,000 | 60,000 | 14% |
 | 100,000 | 65,000 | 15% |
+
+<img width="460" height="388" alt="AutoClickerResults" src="https://github.com/user-attachments/assets/4bcd8f08-6349-44f6-9160-057a4f7f58f6" />
 
 ## Features
 
