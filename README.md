@@ -1,6 +1,6 @@
 # AutoClicker
 
-A desktop auto clicker and macro recorder for **Linux with KDE Plasma on Wayland**, built with C# and Avalonia.
+A desktop auto clicker and macro recorder for **Linux with KDE Plasma on Wayland**, built with C# and Avalonia. Build by Open AI Codex 6.1 Sol Model.
 
 Automate mouse clicks, record mouse and keyboard actions, and replay saved macros with their original timing and click positions. Desktop control uses KDE's portals and KWin scripting. KDE Plasma on Wayland is the only supported desktop.
 
