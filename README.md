@@ -8,7 +8,7 @@ Automate mouse clicks, record mouse and keyboard actions, and replay saved macro
 
 ## Results
 
-Performance may vary depending on your hardware (Tested on). Measured click rates are approximate, with a margin of error of ±1%. The autoclicker can reliably maintain speeds of up to 25,000 clicks per second.
+Performance may vary depending on your hardware. Measured click rates are approximate, with a margin of error of ±1%. The autoclicker can reliably maintain speeds of up to 25,000 clicks per second.
 
 | Requested clicks/s | Received clicks/s | CPU usage |
 | ---: | ---: | ---: |
