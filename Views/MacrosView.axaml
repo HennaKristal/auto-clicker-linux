@@ -20,42 +20,39 @@
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid Margin="{StaticResource PageMargin}" RowDefinitions="Auto,*" RowSpacing="{StaticResource PageSpacing}">
             <Border Classes="card">
-                <Grid ColumnDefinitions="*,230" ColumnSpacing="14">
-                    <StackPanel Spacing="14">
-                        <StackPanel Spacing="3">
-                            <TextBlock Classes="section-title" Text="Macro Recorder" />
-                            <TextBlock Classes="description" Text="Record mouse clicks and keyboard input." />
-                        </StackPanel>
-                        <Grid ColumnDefinitions="1.4*,*,*" ColumnSpacing="10" Height="90">
-                            <Button Name="RecordButton" Command="{Binding RecordCommand}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" AutomationProperties.Name="{Binding RecordLabel}">
-                                <Grid ColumnDefinitions="52,*" ColumnSpacing="12">
-                                    <svg:Svg Classes="action-icon" Path="/Assets/Icons/record.svg" Width="52" Height="52" />
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
-                                        <TextBlock Classes="section-title" Text="{Binding RecordLabel}" TextWrapping="Wrap" />
-                                        <TextBlock Classes="description" Text="{Binding RecordDescription}" />
-                                    </StackPanel>
-                                </Grid>
-                            </Button>
-                            <Border Grid.Column="1" Classes="macro-panel">
-                                <StackPanel Spacing="7" VerticalAlignment="Center">
-                                    <TextBlock Classes="description" Text="Start Recording Hotkey" />
-                                    <Button Content="{Binding RecordStartHotkey}" Command="{Binding ConfigureCommand}" AutomationProperties.Name="Start recording hotkey" />
-                                </StackPanel>
-                            </Border>
-                            <Border Grid.Column="2" Classes="macro-panel">
-                                <StackPanel Spacing="7" VerticalAlignment="Center">
-                                    <TextBlock Classes="description" Text="Stop Recording Hotkey" />
-                                    <Button Content="{Binding RecordStopHotkey}" Command="{Binding ConfigureCommand}" AutomationProperties.Name="Stop recording hotkey" />
-                                </StackPanel>
-                            </Border>
-                        </Grid>
+                <Grid ColumnDefinitions="*,230" RowDefinitions="Auto,Auto" ColumnSpacing="14" RowSpacing="14">
+                    <StackPanel Grid.ColumnSpan="2" Spacing="3">
+                        <TextBlock Classes="section-title" Text="Macro Recorder" />
+                        <TextBlock Classes="description" Text="Record mouse clicks and keyboard input." />
                     </StackPanel>
-                    <Border Grid.Column="1" Classes="macro-panel">
-                        <StackPanel Spacing="2">
+                    <Grid Grid.Row="1" ColumnDefinitions="1.4*,*,*" ColumnSpacing="10" MinHeight="90">
+                        <Button Name="RecordButton" Command="{Binding RecordCommand}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" AutomationProperties.Name="{Binding RecordLabel}">
+                            <Grid ColumnDefinitions="52,*" ColumnSpacing="12">
+                                <svg:Svg Classes="action-icon" Path="/Assets/Icons/record.svg" Width="52" Height="52" />
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+                                    <TextBlock Classes="section-title" Text="{Binding RecordLabel}" TextWrapping="Wrap" />
+                                    <TextBlock Classes="description" Text="{Binding RecordDescription}" />
+                                </StackPanel>
+                            </Grid>
+                        </Button>
+                        <Border Grid.Column="1" Classes="macro-panel">
+                            <StackPanel Spacing="7" VerticalAlignment="Center">
+                                <TextBlock Classes="description" Text="Start Recording Hotkey" />
+                                <Button Content="{Binding RecordStartHotkey}" Command="{Binding ConfigureCommand}" AutomationProperties.Name="Start recording hotkey" />
+                            </StackPanel>
+                        </Border>
+                        <Border Grid.Column="2" Classes="macro-panel">
+                            <StackPanel Spacing="7" VerticalAlignment="Center">
+                                <TextBlock Classes="description" Text="Stop Recording Hotkey" />
+                                <Button Content="{Binding RecordStopHotkey}" Command="{Binding ConfigureCommand}" AutomationProperties.Name="Stop recording hotkey" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    <Border Grid.Row="1" Grid.Column="1" Classes="macro-panel">
+                        <StackPanel Spacing="2" VerticalAlignment="Center">
                             <TextBlock Classes="label" Text="Recording Options" Margin="0,0,0,4" />
                             <CheckBox Content="Record mouse clicks" IsChecked="{Binding RecordClicks, Mode=TwoWay}" IsEnabled="{Binding SettingsEditable}" />
                             <CheckBox Content="Record keyboard input" IsChecked="{Binding RecordKeyboard, Mode=TwoWay}" IsEnabled="{Binding SettingsEditable}" />
-                            <TextBlock Classes="description" Text="Clicks save their cursor position." TextWrapping="Wrap" />
                         </StackPanel>
                     </Border>
                 </Grid>

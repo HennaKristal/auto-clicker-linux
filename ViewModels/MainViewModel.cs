@@ -76,7 +76,7 @@ public sealed class MainViewModel : ObservableObject
     public string ActivationHotkey => Trigger("activate");
     public string RecordStartHotkey => Trigger("record-start");
     public string RecordStopHotkey => Trigger("record-stop");
-    public string Version => "v" + (Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.0.0");
+    public string Version => "v" + (Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.0.1");
     public string TotalClicks { get { lock (statisticsGate) { return (statistics.Clicks + (progress.State is AutomationState.Clicking or AutomationState.Starting ? progress.Clicks : 0)).ToString("N0"); } } }
     public string TotalTime { get { lock (statisticsGate) { return TimeSpan.FromMilliseconds(statistics.RunningMs).ToString(@"d\d\ hh\h\ mm\m\ ss\s"); } } }
     public string Sessions { get { lock (statisticsGate) { return statistics.Sessions.ToString("N0"); } } }
